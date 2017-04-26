@@ -251,13 +251,12 @@ def nametable_from_filename(filepath):
     elif old_table.getName(*field):
       text = old_table.getName(*field).string
     elif old_table.getName(field[0], 3, 1, 1033):
-      text = old_table.getName(field[0], 3, 1, 1033).string.decode('utf_16_be')
+      text = old_table.getName(field[0], 3, 1, 1033)
     elif old_table.getName(field[0], 1, 0, 0):  # check if field exists for mac
-      text = old_table.getName(field[0], 3, 1, 1033).string.decode('mac_roman')
+      text = old_table.getName(field[0], 3, 1, 1033)
 
     if text:
-      enc = 'utf_16_be' if field[0] == 3 else 'mac_roman'
-      new_table.setName(text.encode(enc), *field)
+      new_table.setName(text, *field)
   return new_table
 
 
