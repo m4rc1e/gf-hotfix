@@ -1,9 +1,10 @@
 import os
 import sys
 from fontTools.ttLib import TTFont
-import unittest
 import pandas as pd
 
+from nototools import font_data
+from names import nametable_from_filename
 
 def get_fonts(root_path):
     fonts = []
@@ -14,60 +15,97 @@ def get_fonts(root_path):
     return fonts
 
 
-class TestFont(unittest.TestCase):
-    def setUp(self):
-        self.font = TTFont(font)
-
-
-    def test_fsselection(ttfont):
-        return ttfont['OS/2'].fsSelection
-
-
-    def test_macstyle(ttfont):
-        return ttfont['head'].macStyle
-
-
-    def test_name_table(ttfont):
-        return ttfont['name']
-
-
-    def test_fstype(ttfont):
-        return ttfont['OS/2'].fsType
-
+def parse_metadata(font):
+        """Parse font name to infer weight and slope."""
+        font_name = font_data.font_name(font)
+        bold = 'Bold' in font_name.split()
+        italic = 'Italic' in font_name.split()
+        return bold, italic
 
 
 def check_fsselection(ttfont):
-    return ttfont['OS/2'].fsSelection
+    bold, italic = parse_metadata(ttfont)
+    expected_fs_type = ((bold << 5) | italic) or (1 << 6)
+    if italic:
+        expected_fs_type |= 1
+    # check use_typo_metrics is enabled
+    if 0b10000000 & ttfont['OS/2'].fsSelection:
+        expected_fs_type |= 128
+    print ''
+    print font_data.font_name(ttfont), ttfont['OS/2'].fsSelection, expected_fs_type
+    return 'FAIL' if expected_fs_type != ttfont['OS/2'].fsSelection else 'PASS'
 
 
 def check_macstyle(ttfont):
-    return ttfont['head'].macStyle
+    """Check the macStyle bit"""
+    bold, italic = parse_metadata(ttfont)
+    expected_mac_style = (italic << 1) | bold
+    print font_data.font_name(ttfont), ttfont['head'].macStyle, expected_mac_style
+    return 'FAIL' if ttfont['head'].macStyle != expected_mac_style else 'PASS'
 
 
-def check_name_table(ttfont):
-    return ttfont['name']
+def check_name_table(ttfont, font_path):
+    nameids_to_check = [1, 2, 4, 6, 16, 17]
+    passed = []
+    nametable = ttfont['name']
+    expected_nametable = nametable_from_filename(font_path)
+    for field in nametable.names:
+        name_id = field.nameID 
+        if name_id in nameids_to_check:
+            selected_field = (name_id, field.platformID, field.platEncID, field.langID)
+            current_field = nametable.getName(*selected_field)
+            expected_field = expected_nametable.getName(*selected_field)
+            enc = current_field.getEncoding()
+            if str(current_field.string).decode(enc) != str(expected_field.string).decode(enc):
+                passed.append('Fail')
+
+    if 'FAIL' in passed:
+        return 'FAIL'
+    return 'PASS'
 
 
 def check_fstype(ttfont):
-    return ttfont['OS/2'].fsType
+    """fs type should be installable 0"""
+    expected_fs_type = 0
+    return 'FAIL' if ttfont['OS/2'].fsType != expected_fs_type else 'PASS'
 
 
 def main(root_path):
     fonts_path = get_fonts(root_path)
 
     table = []
+    failed = []
+    columns = [
+        'file',
+        'fsselection',
+        'macstyle',
+        'nametable',
+        'fstype'
+    ]
     for font_path in fonts_path:
-        font = TTFont(font_path)
-        table.append([
-            font_path,
-            check_fsselection(font),
-            check_macstyle(font),
-            check_name_table(font),
-            check_fstype(font)
-        ])
+        try:
+            font = TTFont(font_path)
+            check_name_table(font, font_path)
+            table.append([
+                font_path,
+                check_fsselection(font),
+                check_macstyle(font),
+                check_name_table(font, font_path),
+                check_fstype(font)
+            ])
+        except:
+            all
+            failed.append(font_path)
 
-    df = pd.DataFrame(table, columns=['file', 'fsselection', 'macstyle', 'name', 'fstype'])
+    print len(failed), ' FAILED', failed[:5]
+
+    # return overview CSV
+    df = pd.DataFrame(table, columns=columns)
     df.to_csv('gf_hotfix.csv', sep='\t', encoding='utf-8')
+
+    # failed families only
+    df_failed = df[(df.macstyle == 'FAIL') | (df.fsselection == 'FAIL') | (df.fstype == 'FAIL')]
+    df_failed.to_csv('gf_hotfix_errors.csv', sep='\t', encoding='utf-8')
 
 
 if __name__ == '__main__':
