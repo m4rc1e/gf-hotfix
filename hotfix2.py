@@ -99,6 +99,8 @@ def main(root_path):
         'fsselection',
         'macstyle',
         'nametable',
+        'fstype-F',
+        'fstype-W',
         'fstype'
     ]
     for font_path in fonts_path:
@@ -111,6 +113,8 @@ def main(root_path):
                 check_fsselection(font),
                 check_macstyle(font),
                 check_name_table(font, font_path),
+                font['OS/2'].fsType,
+                0,
                 check_fstype(font)
             ])
         except:
@@ -121,6 +125,8 @@ def main(root_path):
                 get_fsselection(font),
                 'FAIL',
                 'FAIL',
+                font['OS/2'].fsType,
+                0,
                 'FAIL',
                 check_fstype(font)])
             failed.append(font_path)
