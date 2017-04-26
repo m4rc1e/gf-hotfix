@@ -157,11 +157,15 @@ def main(root_path):
 
     # return overview CSV
     df = pd.DataFrame(table, columns=columns)
-    df.to_csv('gf_hotfix.csv', sep='\t', encoding='utf-8')
+    df.to_csv('gf_hotfix.csv', sep='\t', encoding='utf-8', index=False)
+
+    # passed families only
+    df_failed = df[(df.macstyle == 'PASS') | (df.fsselection == 'PASS') | (df.fstype == 'PASS')]
+    df_failed.to_csv('gf_hotfix_passed.csv', sep='\t', encoding='utf-8', index=False)
 
     # failed families only
     df_failed = df[(df.macstyle == 'FAIL') | (df.fsselection == 'FAIL') | (df.fstype == 'FAIL')]
-    df_failed.to_csv('gf_hotfix_errors.csv', sep='\t', encoding='utf-8')
+    df_failed.to_csv('gf_hotfix_errors.csv', sep='\t', encoding='utf-8', index=False)
 
 
 if __name__ == '__main__':
