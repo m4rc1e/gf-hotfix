@@ -23,15 +23,25 @@ def parse_metadata(font):
         return bold, italic
 
 
+def get_fsselection(ttfont):
+    try:
+        bold, italic = parse_metadata(ttfont)
+        fs_type = ((bold << 5) | italic) or (1 << 6)
+        if italic:
+            fs_type |= 1
+        # check use_typo_metrics is enabled
+        if 0b10000000 & ttfont['OS/2'].fsSelection:
+            fs_type |= 128
+        return fs_type
+    except:
+        all
+        return None
+
+
 def check_fsselection(ttfont):
-    bold, italic = parse_metadata(ttfont)
-    expected_fs_type = ((bold << 5) | italic) or (1 << 6)
-    if italic:
-        expected_fs_type |= 1
-    # check use_typo_metrics is enabled
-    if 0b10000000 & ttfont['OS/2'].fsSelection:
-        expected_fs_type |= 128
+    
     print ''
+    expected_fs_type = get_fsselection(ttfont)
     print font_data.font_name(ttfont), ttfont['OS/2'].fsSelection, expected_fs_type
     return 'FAIL' if expected_fs_type != ttfont['OS/2'].fsSelection else 'PASS'
 
@@ -48,7 +58,11 @@ def check_name_table(ttfont, font_path):
     nameids_to_check = [1, 2, 4, 6, 16, 17]
     passed = []
     nametable = ttfont['name']
-    expected_nametable = nametable_from_filename(font_path)
+    try:
+        expected_nametable = nametable_from_filename(font_path)
+    except:
+        all
+        return 'FAIL C'
     for field in nametable.names:
         name_id = field.nameID 
         if name_id in nameids_to_check:
@@ -56,6 +70,9 @@ def check_name_table(ttfont, font_path):
             current_field = nametable.getName(*selected_field)
             expected_field = expected_nametable.getName(*selected_field)
             enc = current_field.getEncoding()
+
+            if not expected_field:
+                return 'FAIL'
             if str(current_field.string).decode(enc) != str(expected_field.string).decode(enc):
                 passed.append('Fail')
 
@@ -77,17 +94,20 @@ def main(root_path):
     failed = []
     columns = [
         'file',
+        'fsselection-F',
+        'fsselection-W',
         'fsselection',
         'macstyle',
         'nametable',
         'fstype'
     ]
     for font_path in fonts_path:
+        font = TTFont(font_path)
         try:
-            font = TTFont(font_path)
-            check_name_table(font, font_path)
             table.append([
                 font_path,
+                font['OS/2'].fsSelection,
+                get_fsselection(font),
                 check_fsselection(font),
                 check_macstyle(font),
                 check_name_table(font, font_path),
@@ -95,6 +115,14 @@ def main(root_path):
             ])
         except:
             all
+            table.append([
+                font_path,
+                font['OS/2'].fsSelection,
+                get_fsselection(font),
+                'FAIL',
+                'FAIL',
+                'FAIL',
+                check_fstype(font)])
             failed.append(font_path)
 
     print len(failed), ' FAILED', failed[:5]
