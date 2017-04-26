@@ -129,6 +129,7 @@ def main(root_path):
                 check_macstyle(font),
 
                 check_name_table(font, font_path),
+
                 font['OS/2'].fsType,
                 0,
                 check_fstype(font)
@@ -147,9 +148,10 @@ def main(root_path):
                 get_macstyle(font),
                 'FAIL',
 
+                'FAIL',
+
                 font['OS/2'].fsType,
                 0,
-                'FAIL',
                 check_fstype(font)])
             failed.append(font_path)
 
@@ -160,12 +162,13 @@ def main(root_path):
     df.to_csv('gf_hotfix.csv', sep='\t', encoding='utf-8', index=False)
 
     # passed families only
-    df_failed = df[(df.macstyle == 'PASS') | (df.fsselection == 'PASS') | (df.fstype == 'PASS')]
-    df_failed.to_csv('gf_hotfix_passed.csv', sep='\t', encoding='utf-8', index=False)
+    df_passed = df[(df.macstyle == 'PASS') | (df.fsselection == 'PASS') | (df.fstype == 'PASS')]
+    df_passed.to_csv('gf_hotfix_passed.csv', sep='\t', encoding='utf-8', index=False)
 
     # failed families only
     df_failed = df[(df.macstyle == 'FAIL') | (df.fsselection == 'FAIL') | (df.fstype == 'FAIL')]
     df_failed.to_csv('gf_hotfix_errors.csv', sep='\t', encoding='utf-8', index=False)
+
 
 
 if __name__ == '__main__':
