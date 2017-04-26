@@ -46,10 +46,19 @@ def check_fsselection(ttfont):
     return 'FAIL' if expected_fs_type != ttfont['OS/2'].fsSelection else 'PASS'
 
 
+def get_macstyle(ttfont):
+    try:
+        bold, italic = parse_metadata(ttfont)
+        mac_style = (italic << 1) | bold
+        return mac_style
+    except:
+        all
+        return None
+
+
 def check_macstyle(ttfont):
     """Check the macStyle bit"""
-    bold, italic = parse_metadata(ttfont)
-    expected_mac_style = (italic << 1) | bold
+    expected_mac_style = get_macstyle(ttfont)
     print font_data.font_name(ttfont), ttfont['head'].macStyle, expected_mac_style
     return 'FAIL' if ttfont['head'].macStyle != expected_mac_style else 'PASS'
 
@@ -97,6 +106,8 @@ def main(root_path):
         'fsselection-F',
         'fsselection-W',
         'fsselection',
+        'macstyle-F',
+        'macstyle-W',
         'macstyle',
         'nametable',
         'fstype-F',
@@ -108,23 +119,34 @@ def main(root_path):
         try:
             table.append([
                 font_path,
+
                 font['OS/2'].fsSelection,
                 get_fsselection(font),
                 check_fsselection(font),
+
+                font['head'].macStyle,
+                get_macstyle(font),
                 check_macstyle(font),
+
                 check_name_table(font, font_path),
                 font['OS/2'].fsType,
                 0,
                 check_fstype(font)
+
             ])
         except:
             all
             table.append([
                 font_path,
+
                 font['OS/2'].fsSelection,
                 get_fsselection(font),
                 'FAIL',
+
+                font['head'].macStyle,
+                get_macstyle(font),
                 'FAIL',
+
                 font['OS/2'].fsType,
                 0,
                 'FAIL',
