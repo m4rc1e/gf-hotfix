@@ -7,9 +7,9 @@ import shutil
 import json
 import requests
 from pprint import pprint
+from settings import production_fonts_dir, gf_api_url
 
 
-GF_API = 'http://tinyurl.com/m8o9k39'
 
 
 def get_gf_font_urls(gf_fonts):
@@ -46,18 +46,12 @@ def delete_files(directory):
 
 
 def main():
-    api_request = requests.get(GF_API)
+    api_request = requests.get(gf_api_url)
     gf_fonts = json.loads(api_request.text)
 
     font_urls = get_gf_font_urls(gf_fonts)
-    out_fonts_dir = os.path.join(
-        os.path.dirname(__file__),
-        'bin',
-        'production_fonts'
-    )
-
-    delete_files(out_fonts_dir)
-    download_files(font_urls, out_fonts_dir)
+    delete_files(production_fonts_dir)
+    download_files(font_urls, production_fonts_dir)
 
 
 if __name__ == '__main__':
