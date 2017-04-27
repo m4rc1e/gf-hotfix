@@ -10,42 +10,31 @@ import fontdata
 
 
 def get_fsselection(ttfont):
-    try:
-        bold, italic = fontdata.parse_metadata(ttfont)
-        fs_type = ((bold << 5) | italic) or (1 << 6)
-        if italic:
-            fs_type |= 1
-        # check use_typo_metrics is enabled
-        if 0b10000000 & ttfont['OS/2'].fsSelection:
-            fs_type |= 128
-        return fs_type
-    except:
-        all
-        return None
+    bold, italic = fontdata.parse_metadata(ttfont)
+    fs_type = ((bold << 5) | italic) or (1 << 6)
+    if italic:
+        fs_type |= 1
+    # check use_typo_metrics is enabled
+    if 0b10000000 & ttfont['OS/2'].fsSelection:
+        fs_type |= 128
+    return fs_type
 
 
 def check_fsselection(ttfont):
-    
-    print ''
     expected_fs_type = get_fsselection(ttfont)
     print font_data.font_name(ttfont), ttfont['OS/2'].fsSelection, expected_fs_type
     return 'FAIL' if expected_fs_type != ttfont['OS/2'].fsSelection else 'PASS'
 
 
 def get_macstyle(ttfont):
-    try:
-        bold, italic = parse_metadata(ttfont)
-        mac_style = (italic << 1) | bold
-        return mac_style
-    except:
-        all
-        return None
+    bold, italic = fontdata.parse_metadata(ttfont)
+    mac_style = (italic << 1) | bold
+    return mac_style
 
 
 def check_macstyle(ttfont):
     """Check the macStyle bit"""
     expected_mac_style = get_macstyle(ttfont)
-    print font_data.font_name(ttfont), ttfont['head'].macStyle, expected_mac_style
     return 'FAIL' if ttfont['head'].macStyle != expected_mac_style else 'PASS'
 
 
@@ -83,10 +72,10 @@ def check_fstype(ttfont):
 
 
 def main(root_path):
-    fonts_path = get_fonts(root_path)
+    repo_vs_production = pd.read_csv('./reports/repo_vs_production.csv', sep='\t')
+    compatible_fonts = repo_vs_production['google/fonts compatible files']
 
     table = []
-    failed = []
     columns = [
         'file',
         'fsselection-F',
@@ -100,48 +89,27 @@ def main(root_path):
         'fstype-W',
         'fstype'
     ]
-    for font_path in fonts_path:
+    for font_path in compatible_fonts:
         font = TTFont(font_path)
-        try:
-            table.append([
-                font_path,
 
-                font['OS/2'].fsSelection,
-                get_fsselection(font),
-                check_fsselection(font),
+        table.append([
+            font_path,
 
-                font['head'].macStyle,
-                get_macstyle(font),
-                check_macstyle(font),
+            font['OS/2'].fsSelection,
+            get_fsselection(font),
+            check_fsselection(font),
 
-                check_name_table(font, font_path),
+            font['head'].macStyle,
+            get_macstyle(font),
+            check_macstyle(font),
 
-                font['OS/2'].fsType,
-                0,
-                check_fstype(font)
+            check_name_table(font, font_path),
 
-            ])
-        except:
-            all
-            table.append([
-                font_path,
+            font['OS/2'].fsType,
+            0,
+            check_fstype(font)
 
-                font['OS/2'].fsSelection,
-                get_fsselection(font),
-                'FAIL',
-
-                font['head'].macStyle,
-                get_macstyle(font),
-                'FAIL',
-
-                'FAIL',
-
-                font['OS/2'].fsType,
-                0,
-                check_fstype(font)])
-            failed.append(font_path)
-
-    print len(failed), ' FAILED', failed[:5]
+        ])
 
     # return overview CSV
     df = pd.DataFrame(table, columns=columns)
