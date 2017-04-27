@@ -6,11 +6,9 @@ Find families which are not in fonts.google.com.
 
 Find families which are not in local repo of google/fonts
 """
-import os
 import sys
 import hashlib
 import pandas as pd
-from ntpath import basename
 
 from settings import production_fonts_dir
 from hotfix2 import get_fonts

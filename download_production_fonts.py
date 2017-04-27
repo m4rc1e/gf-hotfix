@@ -1,15 +1,11 @@
 """
 Download all the fonts hosted on fonts.google.com
 """
-import time
 import os
 import shutil
 import json
 import requests
-from pprint import pprint
 from settings import production_fonts_dir, gf_api_url
-
-
 
 
 def get_gf_font_urls(gf_fonts):
