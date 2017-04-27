@@ -98,9 +98,13 @@ def main(fonts_tree_path):
         'google/fonts compatible files',
         'google/fonts incompatible files',
         'google/fonts missing',
-        'fonts.google.com missing'
+        'fonts.google.com missing',
     ]
     df.to_csv('./reports/repo_vs_production.csv', sep='\t', encoding='utf-8', index=False)
 
 if __name__ == '__main__':
-    main(sys.argv[-1])
+    if len(sys.argv) == 2:
+        main(sys.argv[-1])
+    else:
+        print 'include path to local version of google/fonts repo'
+        
