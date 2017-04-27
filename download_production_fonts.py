@@ -56,12 +56,8 @@ def main():
         'production_fonts'
     )
 
-    remote_fonts_count = len(font_urls)
-    local_fonts_count = len([f for f in os.listdir(out_fonts_dir)
-                        if f.endswith('.ttf')])
-    if remote_fonts_count != local_fonts_count:
-        delete_files(out_fonts_dir)
-        download_files(font_urls, out_fonts_dir)
+    delete_files(out_fonts_dir)
+    download_files(font_urls, out_fonts_dir)
 
 
 if __name__ == '__main__':
