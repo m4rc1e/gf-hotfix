@@ -116,11 +116,11 @@ def main(root_path):
     df.to_csv('./reports/hotfix_overview.csv', sep='\t', encoding='utf-8', index=False)
 
     # passed families only
-    df_passed = df[(df.macstyle == 'PASS') | (df.fsselection == 'PASS') | (df.fstype == 'PASS')]
+    df_passed = df[(df.macstyle == 'PASS') & (df.fsselection == 'PASS') & (df.fstype == 'PASS') & (df.nametable == 'PASS')]
     df_passed.to_csv('./reports/hotfix_passed.csv', sep='\t', encoding='utf-8', index=False)
 
     # failed families only
-    df_failed = df[(df.macstyle == 'FAIL') | (df.fsselection == 'FAIL') | (df.fstype == 'FAIL')]
+    df_failed = df[(df.macstyle == 'FAIL') | (df.fsselection == 'FAIL') | (df.fstype == 'FAIL') | (df.nametable == 'FAIL')]
     df_failed.to_csv('./reports/hotfix_failed.csv', sep='\t', encoding='utf-8', index=False)
 
     failed_files = df_failed['file']
