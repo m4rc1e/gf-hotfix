@@ -159,15 +159,15 @@ def main(root_path):
 
     # return overview CSV
     df = pd.DataFrame(table, columns=columns)
-    df.to_csv('./reports/gf_hotfix.csv', sep='\t', encoding='utf-8', index=False)
+    df.to_csv('./reports/hotfix_overview.csv', sep='\t', encoding='utf-8', index=False)
 
     # passed families only
     df_passed = df[(df.macstyle == 'PASS') | (df.fsselection == 'PASS') | (df.fstype == 'PASS')]
-    df_passed.to_csv('./reports/gf_hotfix_passed.csv', sep='\t', encoding='utf-8', index=False)
+    df_passed.to_csv('./reports/hotfix_passed.csv', sep='\t', encoding='utf-8', index=False)
 
     # failed families only
     df_failed = df[(df.macstyle == 'FAIL') | (df.fsselection == 'FAIL') | (df.fstype == 'FAIL')]
-    df_failed.to_csv('./reports/gf_hotfix_errors.csv', sep='\t', encoding='utf-8', index=False)
+    df_failed.to_csv('./reports/hotfix_failed.csv', sep='\t', encoding='utf-8', index=False)
 
     failed_files = df_failed['file']
     failed_families = [os.path.basename(os.path.dirname(p)) for p in failed_files]
@@ -175,7 +175,7 @@ def main(root_path):
     failed_families = sorted(failed_families)
 
     df_failed_families = pd.DataFrame(failed_families, columns=['family'])
-    df_failed_families.to_csv('./reports/gf_failed_families.csv', sep='\t', encoding='utf-8', index=False)
+    df_failed_families.to_csv('./reports/hotfix_failed_families.csv', sep='\t', encoding='utf-8', index=False)
 
 
 
