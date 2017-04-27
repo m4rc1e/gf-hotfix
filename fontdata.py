@@ -1,3 +1,4 @@
+from nototools import font_data
 from fontTools.ttLib import TTFont
 
 WIN_NAME_SUFFIXES = [
