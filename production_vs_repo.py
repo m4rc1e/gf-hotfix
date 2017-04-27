@@ -12,35 +12,9 @@ import pandas as pd
 
 from settings import production_fonts_dir
 from hotfix2 import get_fonts
+import fontdata
 
 from fontTools.ttLib import TTFont
-
-WIN_NAME_SUFFIXES = [
-    " Thin",
-    " ExtraLight",
-    " Extralight",
-    " SemiLight",
-    " Light",
-    " Regular",
-    " Medium",
-    " SemiBold",
-    " Semibold",
-    " Bold",
-    " ExtraBold",
-    " Extrabold",
-    " Black",
-    " VF Beta",
-
-]
-
-def get_familyname(ttfont):
-    """Get the name of a font file"""
-    name = ttfont['name'].getName(1, 3, 1, 1033).string
-    name = name.decode('utf_16_be')
-    for suffix in WIN_NAME_SUFFIXES:
-        if suffix in name:
-            name = name.replace(suffix, '')
-    return name
 
 
 def hash_files(files):
@@ -72,8 +46,8 @@ def main(fonts_tree_path):
     repo_incompatible_fonts = [f for f in repo_fonts
                                if f not in repo_compatible_fonts]
 
-    repo_font_families_names = set([get_familyname(TTFont(f)) for f in repo_fonts])
-    prod_font_families_names = set([get_familyname(TTFont(f)) for f in prod_fonts])
+    repo_font_families_names = set([fontdata.get_familyname(TTFont(f)) for f in repo_fonts])
+    prod_font_families_names = set([fontdata.get_familyname(TTFont(f)) for f in prod_fonts])
     
     repo_missing_families = prod_font_families_names - repo_font_families_names
     prod_missing_families = repo_font_families_names - prod_font_families_names
@@ -107,4 +81,3 @@ if __name__ == '__main__':
         main(sys.argv[-1])
     else:
         print 'include path to local version of google/fonts repo'
-        
