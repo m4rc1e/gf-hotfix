@@ -6,6 +6,8 @@ import pandas as pd
 from nototools import font_data
 from names import nametable_from_filename
 
+from production_vs_repo import get_familyname
+
 def get_fonts(root_path):
     fonts = []
     for path, r, files in os.walk(root_path):
@@ -170,9 +172,9 @@ def main(root_path):
     df_failed.to_csv('./reports/hotfix_failed.csv', sep='\t', encoding='utf-8', index=False)
 
     failed_files = df_failed['file']
-    failed_families = [os.path.basename(os.path.dirname(p)) for p in failed_files]
+    failed_families = [get_familyname(TTFont(p)) for p in failed_files]
     failed_families = list(set(failed_families))
-    failed_families = sorted(failed_families)
+    sorted(failed_families)
 
     df_failed_families = pd.DataFrame(failed_families, columns=['family'])
     df_failed_families.to_csv('./reports/hotfix_failed_families.csv', sep='\t', encoding='utf-8', index=False)
