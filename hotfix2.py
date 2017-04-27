@@ -5,17 +5,8 @@ import pandas as pd
 
 from nototools import font_data
 from names import nametable_from_filename
+from utils import get_fonts
 import fontdata
-
-def get_fonts(root_path):
-    fonts = []
-    for path, r, files in os.walk(root_path):
-        for f in files:
-            if f.endswith('.ttf'):
-                fonts.append(os.path.join(path, f))
-    return fonts
-
-
 def parse_metadata(font):
         """Parse font name to infer weight and slope."""
         font_name = font_data.font_name(font)

@@ -7,27 +7,12 @@ Find families which are not in fonts.google.com.
 Find families which are not in local repo of google/fonts
 """
 import sys
-import hashlib
 import pandas as pd
 
 from settings import production_fonts_dir
-from hotfix2 import get_fonts
 import fontdata
-
+from utils import get_fonts, hash_files
 from fontTools.ttLib import TTFont
-
-
-def hash_files(files):
-    hashes = {}
-    for f in files:
-        checksum = hash_file(f)
-        hashes[checksum] = f
-    return hashes
-
-
-def hash_file(f):
-    checksum = hashlib.md5(open(f, 'rb').read()).hexdigest()
-    return checksum
 
 
 def main(fonts_tree_path):
