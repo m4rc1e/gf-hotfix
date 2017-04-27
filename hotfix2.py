@@ -7,17 +7,11 @@ from nototools import font_data
 from names import nametable_from_filename
 from utils import get_fonts
 import fontdata
-def parse_metadata(font):
-        """Parse font name to infer weight and slope."""
-        font_name = font_data.font_name(font)
-        bold = 'Bold' in font_name.split()
-        italic = 'Italic' in font_name.split()
-        return bold, italic
 
 
 def get_fsselection(ttfont):
     try:
-        bold, italic = parse_metadata(ttfont)
+        bold, italic = fontdata.parse_metadata(ttfont)
         fs_type = ((bold << 5) | italic) or (1 << 6)
         if italic:
             fs_type |= 1

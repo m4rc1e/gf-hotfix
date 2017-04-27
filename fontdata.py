@@ -25,3 +25,11 @@ def get_familyname(ttfont):
         if suffix in name:
             name = name.replace(suffix, '')
     return name
+
+
+def parse_metadata(font):
+        """Parse font name to infer weight and slope."""
+        font_name = font_data.font_name(font)
+        bold = 'Bold' in font_name.split()
+        italic = 'Italic' in font_name.split()
+        return bold, italic
