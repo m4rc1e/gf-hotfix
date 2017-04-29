@@ -2,6 +2,8 @@ import requests
 import shutil
 import hashlib
 import os
+import json
+
 
 def get_fonts(root_path):
     fonts = []
@@ -32,7 +34,7 @@ def download_files(urls, dest):
 
 def api_request(url):
     """Return json from an api get endpoint"""
-    api_request = requests.get(gf_api_url)
+    api_request = requests.get(url)
     return json.loads(api_request.text)
 
 

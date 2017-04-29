@@ -18,9 +18,7 @@ def get_gf_font_urls(gf_fonts):
 
 def main():
     gf_api_request = api_request(gf_api_url)
-    gf_fonts = json.loads(gf_api_request.text)
-
-    font_urls = get_gf_font_urls(gf_fonts)
+    font_urls = get_gf_font_urls(gf_api_request)
     delete_files(production_fonts_dir)
     download_files(font_urls, production_fonts_dir)
 
