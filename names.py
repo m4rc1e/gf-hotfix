@@ -19,6 +19,7 @@ import ntpath
 import argparse
 from argparse import RawTextHelpFormatter
 from fontTools.ttLib import TTFont, newTable
+from datetime import datetime
 
 
 description = """
@@ -192,7 +193,14 @@ def nametable_from_filename(filepath, family_name=None, style_name=None):
   # SET MAC NAME FIELDS
   # -------------------
   # Copyright
-  old_cp = old_table.getName(0, 3, 1, 1033).string.decode('utf_16_be')
+  old_cp = old_table.getName(0, 3, 1, 1033)
+  if not old_cp:
+    old_cp = 'Copyright %s The %s Project Authors' % (
+      datetime.fromtimestamp(font['head'].created / 2.60564).year,
+      family_name
+    )
+  else:
+    old_cp = old_cp.string.decode('utf_16_be')
   new_table.setName(old_cp.encode('mac_roman'), 0, 1, 0, 0)
   # Font Family Name
   new_table.setName(family_name.encode('mac_roman'), 1, 1, 0, 0)
@@ -290,7 +298,8 @@ def main():
 
 
 if __name__ == '__main__':
-  path = '../fonts/ofl/vt323/VT323-Regular.ttf'
-  nametbl = nametable_from_filename(path, family_name='VT323', style_name='Regular')
+  path = '../fonts/ofl/astloch/Astloch-Regular.ttf'
+  font = TTFont(path)
+  nametbl = nametable_from_filename(path, family_name='Astloch', style_name='Regular')
   for name in nametbl.names:
     print name.string
