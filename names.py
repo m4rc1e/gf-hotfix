@@ -113,8 +113,11 @@ def _unique_id(version, vendor_id, filename):
   return '%s;%s;%s' % (version, vendor_id, filename)
 
 
-def _version(text):
-  return re.search(r'[0-9]{1,4}\.[0-9]{1,8}', text).group(0)
+def _version(text, head_version):
+  parse_version = re.search(r'[0-9]{1,4}\.[0-9]{1,8}', text)
+  if parse_version:
+    return parse_version.group(0)
+  return head_version
 
 
 def _full_name(family_name, style_name):
@@ -208,7 +211,11 @@ def nametable_from_filename(filepath, family_name=None, style_name=None):
   mac_subfamily_name = _mac_subfamily_name(style_name).encode('mac_roman')
   new_table.setName(mac_subfamily_name, 2, 1, 0, 0)
   # Unique ID
-  unique_id = _unique_id(_version(font_version), vendor_id, filename)
+  unique_id = _unique_id(
+    _version(font_version, font['head'].fontRevision),
+    vendor_id,
+    filename
+  )
   mac_unique_id = unique_id.encode('mac_roman')
   new_table.setName(mac_unique_id, 3, 1, 0, 0)
   # Full name
@@ -298,7 +305,7 @@ def main():
 
 
 if __name__ == '__main__':
-  path = '../fonts/ofl/astloch/Astloch-Regular.ttf'
+  path = '../fonts/ofl/cagliostro/Cagliostro-Regular.ttf'
   font = TTFont(path)
   nametbl = nametable_from_filename(path, family_name='Astloch', style_name='Regular')
   for name in nametbl.names:
