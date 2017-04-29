@@ -30,6 +30,12 @@ def download_files(urls, dest):
         download_file(url, dest)
 
 
+def api_request(url):
+    """Return json from an api get endpoint"""
+    api_request = requests.get(gf_api_url)
+    return json.loads(api_request.text)
+
+
 def download_file(url, dest, log=True):
     """Download a file from a url to a specified destination.
 

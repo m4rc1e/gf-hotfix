@@ -5,7 +5,7 @@ import os
 import json
 import requests
 from settings import production_fonts_dir, gf_api_url
-from utils import download_files, delete_files
+from utils import download_files, delete_files, api_request
 
 
 def get_gf_font_urls(gf_fonts):
@@ -16,10 +16,9 @@ def get_gf_font_urls(gf_fonts):
     return urls
 
 
-
 def main():
-    api_request = requests.get(gf_api_url)
-    gf_fonts = json.loads(api_request.text)
+    gf_api_request = api_request(gf_api_url)
+    gf_fonts = json.loads(gf_api_request.text)
 
     font_urls = get_gf_font_urls(gf_fonts)
     delete_files(production_fonts_dir)
