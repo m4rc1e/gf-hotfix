@@ -48,3 +48,9 @@ def download_file(url, dest, log=True):
 def delete_files(directory):
     shutil.rmtree(directory)
     os.makedirs(directory)
+
+
+def rebuild_font_filename(ttfont):
+    """Recreate a font's filename from the ps name"""
+    ps_name = ttfont['name'].getName(6, 3, 1, 1033).string.decode('utf_16_be')
+    return ps_name + '.ttf'
