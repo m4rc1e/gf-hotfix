@@ -177,6 +177,9 @@ def main(root_path):
     df_failed_families = pd.DataFrame(failed_families, columns=['family'])
     df_failed_families.to_csv('./reports/hotfix_failed_families.csv', sep='\t', encoding='utf-8', index=False)
 
+    non_canonical = df[df['canonical'] == False]
+    non_canonical.to_csv('./reports/non_canonical.csv', sep='\t', encoding='utf-8', index=False)
+
 
 
 if __name__ == '__main__':
