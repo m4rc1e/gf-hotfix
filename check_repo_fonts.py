@@ -18,9 +18,6 @@ def check_font_attrib(real, desired):
     return [real, desired, 'FAIL']
 
 
-# [family_name, subfamily, full_name, ps_name, pref_family, pref_subfamily]
-
-
 def main(root_path):
     repo_vs_production = pd.read_csv('./reports/repo_vs_production.csv', sep='\t')
     # We only want to check fonts which match between the two sources
@@ -98,10 +95,12 @@ def main(root_path):
 
 
         row.insert(0, font_path)
+        row.insert(1, fontdata.is_canonical(font_path))
         table.append(row)
 
     df_columns = [
         'file',
+        'canonical',
 
         'fsselection-F',
         'fsselection-W',
