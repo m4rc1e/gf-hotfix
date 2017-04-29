@@ -5,7 +5,7 @@ Checks are conducted on fonts which match betweeen fonts.google.com
 and a local version google/fonts repo.
 """
 import sys
-from fontTools.ttLib import TTFont
+from fontTools.ttLib import TTFont, newTable
 import pandas as pd
 
 import fontdata
@@ -16,6 +16,29 @@ def check_font_attrib(real, desired):
     if str(real) == str(desired):
         return [real, desired, 'PASS']
     return [real, desired, 'FAIL']
+
+
+def check_nametable(real_nametable, desired_nametable):
+    check_names = []
+    nameids = [1, 2, 4, 6, 16, 17]
+    for nameid in nameids:
+        nameid_check = check_fname_field(
+            real_nametable, desired_nametable, (nameid, 3, 1, 1033)
+        )
+        check_names.append(nameid_check)
+    return check_names
+
+
+def check_fname_field(real_name_tbl, desired_name_tbl, name):
+    real, desired = None, None
+    if hasattr(real_name_tbl, 'names'):
+        real = real_name_tbl.getName(*name)
+        real = real.string.decode('utf_16_be') if real else None
+    if hasattr(desired_name_tbl, 'names'):
+        desired = desired_name_tbl.getName(*name)
+        desired = desired.string.decode('utf_16_be') if desired else None
+
+    return check_font_attrib(real, desired)
 
 
 def main(root_path):
@@ -29,7 +52,7 @@ def main(root_path):
         try:
             gf_nametable = gfspec.get_nametable(font_path)
         except:
-            gf_nametable = None
+            gf_nametable = newTable('name')
 
         check_fsselection = check_font_attrib(
             font['OS/2'].fsSelection,
@@ -47,51 +70,15 @@ def main(root_path):
             font['OS/2'].fsType,
             gfspec.FSTYPE
         )
-        try:
-            gf_familyname = gf_nametable.getName(1, 3, 1, 1033).string.decode('utf_16_be')
-            gf_stylename = gf_nametable.getName(2, 3, 1, 1033).string.decode('utf_16_be')
-            gf_fullname = gf_nametable.getName(4, 3, 1, 1033).string.decode('utf_16_be')
-            gf_psname = gf_nametable.getName(6, 3, 1, 1033).string.decode('utf_16_be')
-            gf_pref_familyname = gf_nametable.getName(16, 3, 1, 1033).string.decode('utf_16_be')
-        except:
-            gf_familyname = gf_stylename = gf_fullname = gf_ps_name = None
-            gf_pref_familyname = None
+        check_names = check_nametable(font['name'], gf_nametable)
 
-        check_familyname = check_font_attrib(
-            font['name'].getName(1, 3, 1, 1033).string.decode('utf_16_be'),
-            gf_familyname
-        )
-        check_stylename = check_font_attrib(
-            font['name'].getName(2, 3, 1, 1033).string.decode('utf_16_be'),
-            gf_stylename
-        )
-        check_fullname = check_font_attrib(
-            font['name'].getName(4, 3, 1, 1033).string.decode('utf_16_be'),
-            gf_fullname
-        )
-        check_psname = check_font_attrib(
-            font['name'].getName(6, 3, 1, 1033).string.decode('utf_16_be'),
-            gf_psname
-        )
-        if gf_pref_familyname:
-            try:
-                font_pref_familyname = font['name'].getName(16, 3, 1, 1033).string.decode('utf_16_be')
-            except AttributeError:  # Font does not have this field
-                font_pref_familyname = None
 
-        check_pref_familyname = check_font_attrib(
-            font_pref_familyname,
-            gf_pref_familyname
-        )
         row = check_fsselection + \
               check_macstyle + \
               check_weightclass + \
-              check_fstype + \
-              check_familyname + \
-              check_stylename + \
-              check_fullname + \
-              check_psname + \
-              check_pref_familyname
+              check_fstype
+        for check in check_names:
+            row += check
 
 
         row.insert(0, font_path)
@@ -137,9 +124,13 @@ def main(root_path):
 
         'pref family name-F',
         'pref family name-W',
-        'pref family name'
+        'pref family name',
+
+        'pref style name-F',
+        'pref style name-W',
+        'pref style name',
     ]
-    # return overview CSV
+    # return collection wide overview CSV
     df = pd.DataFrame(table, columns=df_columns)
     df.to_csv('./reports/hotfix_overview.csv', sep='\t', encoding='utf-8', index=False)
 
