@@ -223,7 +223,11 @@ def nametable_from_filename(filepath, family_name=None, style_name=None):
   mac_fullname = fullname.encode('mac_roman')
   new_table.setName(mac_fullname, 4, 1, 0, 0)
   # Version string
-  old_v = old_table.getName(5, 3, 1, 1033).string.decode('utf_16_be')
+  old_v = old_table.getName(5, 3, 1, 1033)
+  if old_v:
+    old_v = old_v.string.decode('utf_16_be')
+  else:
+    old_v = 'Version %s' % font['head'].fontRevision
   mac_old_v = old_v.encode('mac_roman')
   new_table.setName(mac_old_v, 5, 1, 0, 0)
   # Postscript name
@@ -305,8 +309,8 @@ def main():
 
 
 if __name__ == '__main__':
-  path = '../fonts/ofl/cagliostro/Cagliostro-Regular.ttf'
+  path = '../fonts/ofl/josefinsans/JosefinSans-Regular.ttf'
   font = TTFont(path)
-  nametbl = nametable_from_filename(path, family_name='Astloch', style_name='Regular')
+  nametbl = nametable_from_filename(path, family_name='Exo', style_name='BoldItalic')
   for name in nametbl.names:
     print name.string
