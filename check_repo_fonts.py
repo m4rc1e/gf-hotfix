@@ -132,23 +132,50 @@ def main(root_path):
     ]
     # return collection wide overview CSV
     df = pd.DataFrame(table, columns=df_columns)
+    df = df.sort(['family name-F', 'style name-F'])
     df.to_csv('./reports/hotfix_overview.csv', sep='\t', encoding='utf-8', index=False)
 
     # # passed families only
-    df_passed = df[(df['macstyle'] == 'PASS')]# & (df.fsselection == 'PASS') & (df.fstype == 'PASS') & (df.weightclass == 'PASS') & (df.nametable == 'PASS')]
+    df_passed = df[
+        (df['canonical'] == True) & \
+        (df['macstyle'] == 'PASS') & \
+        (df['fsselection'] == 'PASS') & \
+        (df['fstype'] == 'PASS') & \
+        (df['weightclass'] == 'PASS') & \
+        (df['fstype'] == 'PASS') & \
+        (df['family name'] == 'PASS') & \
+        (df['style name'] == 'PASS') & \
+        (df['full name'] == 'PASS') & \
+        (df['ps name'] == 'PASS') & \
+        (df['pref family name'] == 'PASS') & \
+        (df['pref style name'] == 'PASS')
+    ]
     df_passed.to_csv('./reports/hotfix_passed.csv', sep='\t', encoding='utf-8', index=False)
 
     # # failed families only
-    # df_failed = df[(df.macstyle == 'FAIL') | (df.fsselection == 'FAIL') | (df.fstype == 'FAIL') | (df.nametable == 'FAIL')]
-    # df_failed.to_csv('./reports/hotfix_failed.csv', sep='\t', encoding='utf-8', index=False)
+    df_failed = df[
+        (df['canonical'] == True) & \
+        (df['macstyle'] == 'FAIL') & \
+        (df['fsselection'] == 'FAIL') & \
+        (df['fstype'] == 'FAIL') & \
+        (df['weightclass'] == 'FAIL') & \
+        (df['fstype'] == 'FAIL') & \
+        (df['family name'] == 'FAIL') & \
+        (df['style name'] == 'FAIL') & \
+        (df['full name'] == 'FAIL') & \
+        (df['ps name'] == 'FAIL') & \
+        (df['pref family name'] == 'FAIL') & \
+        (df['pref style name'] == 'FAIL')
+    ]
+    df_failed.to_csv('./reports/hotfix_failed.csv', sep='\t', encoding='utf-8', index=False)
 
-    # failed_files = df_failed['file']
-    # failed_families = [fontdata.get_familyname(TTFont(p)) for p in failed_files]
-    # failed_families = list(set(failed_families))
-    # sorted(failed_families)
+    failed_files = df_failed['file']
+    failed_families = [fontdata.get_familyname(TTFont(p)) for p in failed_files]
+    failed_families = list(set(failed_families))
+    sorted(failed_families)
 
-    # df_failed_families = pd.DataFrame(failed_families, columns=['family'])
-    # df_failed_families.to_csv('./reports/hotfix_failed_families.csv', sep='\t', encoding='utf-8', index=False)
+    df_failed_families = pd.DataFrame(failed_families, columns=['family'])
+    df_failed_families.to_csv('./reports/hotfix_failed_families.csv', sep='\t', encoding='utf-8', index=False)
 
 
 
