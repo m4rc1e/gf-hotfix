@@ -106,8 +106,8 @@ def parse_metadata(font):
         return bold, italic
 
 
-def get_nametable(filepath):
-    return names.nametable_from_filename(filepath)
+def get_nametable(filepath, family_name=None, style_name=None):
+    return names.nametable_from_filename(filepath, family_name=family_name, style_name=style_name)
 
 
 if __name__ == '__main__':

@@ -7,9 +7,11 @@ and a local version google/fonts repo.
 import sys
 from fontTools.ttLib import TTFont, newTable
 import pandas as pd
+from ntpath import basename
 
 import fontdata
 import gfspec
+import gfcollection
 
 
 def check_font_attrib(real, desired):
@@ -49,8 +51,19 @@ def main(root_path):
     table = []
     for font_path in compatible_files:
         font = TTFont(font_path)
+
         try:
-            gf_nametable = gfspec.get_nametable(font_path)
+            font_name = fontdata.get_familyname(font)
+            filename = basename(font_path[:-4])
+            if '-' in filename:
+                font_style = filename.split('-')[-1]
+            else:
+                font_style = None
+            gf_nametable = gfspec.get_nametable(
+                font_path,
+                family_name=font_name,
+                style_name=font_style,
+            )
         except:
             gf_nametable = newTable('name')
 
@@ -154,17 +167,17 @@ def main(root_path):
 
     # # failed families only
     df_failed = df[
-        (df['canonical'] == True) & \
-        (df['macstyle'] == 'FAIL') & \
-        (df['fsselection'] == 'FAIL') & \
-        (df['fstype'] == 'FAIL') & \
-        (df['weightclass'] == 'FAIL') & \
-        (df['fstype'] == 'FAIL') & \
-        (df['family name'] == 'FAIL') & \
-        (df['style name'] == 'FAIL') & \
-        (df['full name'] == 'FAIL') & \
-        (df['ps name'] == 'FAIL') & \
-        (df['pref family name'] == 'FAIL') & \
+        (df['canonical'] == True) | \
+        (df['macstyle'] == 'FAIL') | \
+        (df['fsselection'] == 'FAIL') | \
+        (df['fstype'] == 'FAIL') | \
+        (df['weightclass'] == 'FAIL') | \
+        (df['fstype'] == 'FAIL') | \
+        (df['family name'] == 'FAIL') | \
+        (df['style name'] == 'FAIL') | \
+        (df['full name'] == 'FAIL') | \
+        (df['ps name'] == 'FAIL') | \
+        (df['pref family name'] == 'FAIL') | \
         (df['pref style name'] == 'FAIL')
     ]
     df_failed.to_csv('./reports/hotfix_failed.csv', sep='\t', encoding='utf-8', index=False)

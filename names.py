@@ -171,15 +171,19 @@ def set_fsSelection(fsSelection, style):
   return bits
 
 
-def nametable_from_filename(filepath):
+def nametable_from_filename(filepath, family_name=None, style_name=None):
   """Generate a new nametable based on a ttf and the GF Spec"""
   font = TTFont(filepath)
   old_table = font['name']
   new_table = newTable('name')
   filename = ntpath.basename(filepath)[:-4]
 
-  family_name, style_name = filename.split('-')
-  family_name = _split_camelcase(family_name)
+  if not family_name and not style_name:
+    family_name, style_name = filename.split('-')
+    family_name = _split_camelcase(family_name)
+
+  if not style_name:
+    raise NotImplementedError('style_name missing')
 
   font_version = font['name'].getName(5, 3, 1, 1033)
   font_version = str(font_version).decode('utf_16_be')
@@ -251,12 +255,13 @@ def nametable_from_filename(filepath):
     elif old_table.getName(*field):
       text = old_table.getName(*field).string
     elif old_table.getName(field[0], 3, 1, 1033):
-      text = old_table.getName(field[0], 3, 1, 1033)
+      text = old_table.getName(field[0], 3, 1, 1033).string.decode('utf_16_be')
     elif old_table.getName(field[0], 1, 0, 0):  # check if field exists for mac
-      text = old_table.getName(field[0], 3, 1, 1033)
+      text = old_table.getName(field[0], 3, 1, 1033).string.decode('mac_roman')
 
     if text:
-      new_table.setName(text, *field)
+      enc = 'utf_16_be' if field[0] == 3 else 'mac_roman'
+      new_table.setName(text.encode(enc), *field)
   return new_table
 
 
@@ -285,4 +290,7 @@ def main():
 
 
 if __name__ == '__main__':
-  main()
+  path = '../fonts/ofl/vt323/VT323-Regular.ttf'
+  nametbl = nametable_from_filename(path, family_name='VT323', style_name='Regular')
+  for name in nametbl.names:
+    print name.string
