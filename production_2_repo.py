@@ -1,5 +1,5 @@
 """
-Convert the flat production font folder in a 
+Convert the flat production font folder into a 
 google/fonts repo.
 
 Store fonts which do not a folder in the repo in a _todo dir
@@ -7,6 +7,8 @@ Store fonts which do not a folder in the repo in a _todo dir
 import sys
 import os
 import shutil
+from settings import production_fonts_dir, gf_api_url
+
 
 TODO = '_todo'
 
@@ -25,6 +27,12 @@ def copy_repo_fonts_dir(root_path):
 
 def main(root_path):
     copy_repo_fonts_dir(root_path)
+    # build map of production files with realnames
+    # build map of repo files
+    # Iterate through repo files
+        # if the repo is not in manual fonts, continue
+        # if names match, swap production font with repo font
+
 
 
 if __name__ == '__main__':
