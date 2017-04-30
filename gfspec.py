@@ -1,9 +1,10 @@
-import names
 from nototools import font_data
 from ntpath import basename
-from utils import get_fonts
 from fontTools.ttLib import TTFont
+
 from names import nametable_from_filename
+import fontdata
+from utils import get_fonts
 
 STYLES = [
     "Thin",
@@ -83,8 +84,17 @@ def parse_metadata(filename):
         return bold, italic
 
 
-def get_nametable(filepath, family_name=None, style_name=None):
-    return names.nametable_from_filename(filepath, family_name=family_name, style_name=style_name)
+def get_nametable(font_path):
+
+    filename = basename(font_path[:-4])
+    family_name = fontdata.get_familyname(TTFont(font_path))
+    font_style = filename.split('-')[-1]
+    gf_nametable = nametable_from_filename(
+        font_path,
+        family_name=family_name,
+        style_name=font_style
+    )
+    return gf_nametable
 
 
 if __name__ == '__main__':

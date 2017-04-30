@@ -55,19 +55,8 @@ def main(fonts_tree):
 
         if font_name not in blacklist.fonts:
             if font_name not in blacklist.existing_pr:
-                try:
-                    filename = basename(font_path[:-4])
-                    if '-' in filename:
-                        font_style = filename.split('-')[-1]
-                    else:
-                        font_style = None
-                    gf_nametable = gfspec.get_nametable(
-                        font_path,
-                        family_name=font_name,
-                        style_name=font_style,
-                    )
-                except:
-                    gf_nametable = newTable('name')
+
+                gf_nametable = gfspec.get_nametable(font_path)
 
                 check_fsselection = check_font_attrib(
                     font['OS/2'].fsSelection,
@@ -187,7 +176,7 @@ def main(fonts_tree):
     failed_files = df_failed['file']
     failed_families = [fontdata.get_familyname(TTFont(p)) for p in failed_files]
     failed_families = list(set(failed_families))
-    sorted(failed_families)
+    failed_families = sorted(failed_families)
 
     df_failed_families = pd.DataFrame(failed_families, columns=['family'])
     df_failed_families.to_csv('./reports/hotfix_failed_families.csv', sep='\t', encoding='utf-8', index=False)
