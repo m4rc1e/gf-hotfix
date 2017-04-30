@@ -1,6 +1,8 @@
 from fontTools.ttLib import TTFont 
 
 import utils
+import gfspec
+
 import unittest
 
 
@@ -13,6 +15,12 @@ class TestUtils(unittest.TestCase):
     def test_rebuild_font_filename(self):
         for font in self.production_fonts:
             self.assertIn('ttf', utils.rebuild_font_filename(font))
+
+
+class TestGFSpec(unittest.TestCase):
+
+    def test_get_fsselection(self):
+        pass
 
 
 if __name__ == '__main__':
