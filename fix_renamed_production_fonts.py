@@ -5,7 +5,7 @@ from ntpath import basename
 
 import gfspec
 import fontdata
-from utils import get_fonts
+from utils import get_fonts, delete_files
 
 
 def fix_fonts(fonts_paths, families_to_fix, dest):
@@ -27,8 +27,10 @@ def fix_font(font_path, families_to_fix, dest):
         font['OS/2'].usWeightClass = gfspec.get_weightclass(font_path)
         font['OS/2'].fsType = gfspec.FSTYPE
         font['name'] = nametable
-    font.save(dest_path)
-    print 'Font %s fixed and saved to %s' % (font_name, dest_path)
+        font.save(dest_path)
+    else:
+        print 'Skipping %s, blacklisted' % font_name 
+        print 'Font %s fixed and saved to %s' % (font_name, dest_path)
 
 
 def main():
@@ -36,6 +38,7 @@ def main():
     broken_families = list(broken_families_doc['family'])
 
     renamed_prod_fonts = get_fonts('./bin/production_fonts_renamed')
+    delete_files('./bin/production_fonts_fixed')
     fix_fonts(renamed_prod_fonts, broken_families, './bin/production_fonts_fixed')
 
 if __name__ == '__main__':
