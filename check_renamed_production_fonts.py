@@ -45,9 +45,9 @@ def check_fname_field(real_name_tbl, desired_name_tbl, name):
     return check_font_attrib(real, desired)
 
 
-def main(root_path):
+def main(fonts_tree):
 
-    font_paths = utils.get_fonts(production_fonts_renamed_dir)
+    font_paths = utils.get_fonts(fonts_tree)
     table = []
     for font_path in font_paths:
         font = TTFont(font_path)
@@ -198,7 +198,4 @@ def main(root_path):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        main(sys.argv[-1])
-    else:
-        'please add google/fonts repo path'
+    main(production_fonts_renamed_dir)
