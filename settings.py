@@ -12,3 +12,9 @@ production_fonts_renamed_dir = os.path.join(
     'production_fonts_renamed'
 )
 gf_api_url = 'http://tinyurl.com/m8o9k39'
+
+production_fonts_fixed_dir = os.path.join(
+    os.path.dirname(__file__),
+    'bin',
+    'production_fonts_fixed'
+)

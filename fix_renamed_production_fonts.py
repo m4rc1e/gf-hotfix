@@ -6,7 +6,7 @@ from ntpath import basename
 import gfspec
 import fontdata
 from utils import get_fonts, delete_files
-
+from settings import production_fonts_fixed_dir, production_fonts_renamed_dir
 
 def fix_fonts(fonts_paths, families_to_fix, dest):
     for font_path in fonts_paths:
@@ -37,9 +37,9 @@ def main():
     broken_families_doc = pd.read_csv('./reports/hotfix_failed_families.csv', delimiter='\t', encoding='utf-8')
     broken_families = list(broken_families_doc['family'])
 
-    renamed_prod_fonts = get_fonts('./bin/production_fonts_renamed')
-    delete_files('./bin/production_fonts_fixed')
-    fix_fonts(renamed_prod_fonts, broken_families, './bin/production_fonts_fixed')
+    renamed_prod_fonts = get_fonts(production_fonts_renamed_dir)
+    delete_files(production_fonts_fixed_dir)
+    fix_fonts(renamed_prod_fonts, broken_families, production_fonts_fixed_dir)
 
 if __name__ == '__main__':
     main()
