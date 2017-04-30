@@ -35,6 +35,14 @@ fonts = [
     'Montserrat Alternates',
     'Montserrat Alternates ExLight',
     'Abril Fatface',
+    'Exo 2 Semi',
+    'Exo 2 Extra',
+    'Exo 2',
+    'Vesper Libre Heavy',
+    'Martel UltraLight',
+    'Martel Heavy',
+    'Martel DemiBold',
+    'Martel',
 ]
 
 existing_pr = [
@@ -145,6 +153,8 @@ existing_pr = [
     'Raleway',
     'Roboto',
     'Roboto Condensed',
+    'Roboto Slab',
+    'Roboto Mono',
     'Rokkitt',
     'Ropa Sans',
     'Rubik',
