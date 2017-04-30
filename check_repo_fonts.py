@@ -48,56 +48,57 @@ def check_fname_field(real_name_tbl, desired_name_tbl, name):
 def main(root_path):
 
     font_paths = utils.get_fonts(production_fonts_renamed_dir)
-
     table = []
     for font_path in font_paths:
         font = TTFont(font_path)
         font_name = fontdata.get_familyname(font)
+
         if font_name not in blacklist.fonts:
-            try:
-                filename = basename(font_path[:-4])
-                if '-' in filename:
-                    font_style = filename.split('-')[-1]
-                else:
-                    font_style = None
-                gf_nametable = gfspec.get_nametable(
-                    font_path,
-                    family_name=font_name,
-                    style_name=font_style,
+            if font_name not in blacklist.existing_pr:
+                try:
+                    filename = basename(font_path[:-4])
+                    if '-' in filename:
+                        font_style = filename.split('-')[-1]
+                    else:
+                        font_style = None
+                    gf_nametable = gfspec.get_nametable(
+                        font_path,
+                        family_name=font_name,
+                        style_name=font_style,
+                    )
+                except:
+                    gf_nametable = newTable('name')
+
+                check_fsselection = check_font_attrib(
+                    font['OS/2'].fsSelection,
+                    gfspec.get_fsselection(font, font_path)
                 )
-            except:
-                gf_nametable = newTable('name')
-
-            check_fsselection = check_font_attrib(
-                font['OS/2'].fsSelection,
-                gfspec.get_fsselection(font, font_path)
-            )
-            check_macstyle = check_font_attrib(
-                font['head'].macStyle,
-                gfspec.get_macstyle(font_path)
-            )
-            check_weightclass = check_font_attrib(
-                font['OS/2'].usWeightClass,
-                gfspec.get_weightclass(font_path)
-            )
-            check_fstype = check_font_attrib(
-                font['OS/2'].fsType,
-                gfspec.FSTYPE
-            )
-            check_names = check_nametable(font['name'], gf_nametable)
+                check_macstyle = check_font_attrib(
+                    font['head'].macStyle,
+                    gfspec.get_macstyle(font_path)
+                )
+                check_weightclass = check_font_attrib(
+                    font['OS/2'].usWeightClass,
+                    gfspec.get_weightclass(font_path)
+                )
+                check_fstype = check_font_attrib(
+                    font['OS/2'].fsType,
+                    gfspec.FSTYPE
+                )
+                check_names = check_nametable(font['name'], gf_nametable)
 
 
-            row = check_fsselection + \
-                  check_macstyle + \
-                  check_weightclass + \
-                  check_fstype
-            for check in check_names:
-                row += check
+                row = check_fsselection + \
+                      check_macstyle + \
+                      check_weightclass + \
+                      check_fstype
+                for check in check_names:
+                    row += check
 
 
-            row.insert(0, font_path)
-            row.insert(1, fontdata.is_canonical(font_path))
-            table.append(row)
+                row.insert(0, font_path)
+                row.insert(1, fontdata.is_canonical(font_path))
+                table.append(row)
 
     df_columns = [
         'file',
