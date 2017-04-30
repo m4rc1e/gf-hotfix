@@ -1,6 +1,8 @@
 import names
 from nototools import font_data
-
+from utils import get_fonts
+from fontTools.ttLib import TTFont
+from names import nametable_from_filename
 
 STYLES = [
     "Thin",
@@ -57,27 +59,32 @@ def get_fsselection(ttfont):
     return fs_type
 
 
-def get_weightclass_by_fullname(ttfont):
-    """Return the desired OS/2 weightclass"""
-    full_name = ttfont['name'].getName(4, 3, 1, 1033).string.decode('utf_16_be')
-    for word in full_name.split():
-        if word in WEIGHTS:
-            return WEIGHTS[word]
-    return None
+# def get_weightclass_by_fullname(ttfont):
+#     """Return the desired OS/2 weightclass"""
+#     full_name = ttfont['name'].getName(4, 3, 1, 1033).string.decode('utf_16_be')
+#     for word in full_name.split():
+#         if word in WEIGHTS:
+#             return WEIGHTS[word]
+#     return None
 
 
-def get_weightclass_by_stylename(ttfont):
-    style_name = ttfont['name'].getName(2, 3, 1, 1033).string.decode('utf_16_be')
-    for word in style_name.split():
-        if word in WEIGHTS:
-            return WEIGHTS[word]
-    return None
+# def get_weightclass_by_stylename(ttfont):
+#     style_name = ttfont['name'].getName(2, 3, 1, 1033).string.decode('utf_16_be')
+#     for word in style_name.split():
+#         if word in WEIGHTS:
+#             return WEIGHTS[word]
+#     return None
 
 
 def get_weightclass_by_filename(filename):
-    for weight in WEIGHTS:
-        if weight in filename:
+    font_style = filename[:-4].split('-')[-1]
+    if font_style == 'Italic':
+        return 400
+    font_weight = font_style.replace('Italic', '')
+    for weight in STYLES:
+        if weight == font_weight:
             return WEIGHTS[weight]
+    return None
 
 
 def get_weightclass_by_name_tbl(ttfont):
@@ -86,7 +93,7 @@ def get_weightclass_by_name_tbl(ttfont):
     return fullname if fullname else stylename
 
 
-def get_weightclass(ttfont, filename):
+def get_weightclass(filename):
     """Infer the OS/2 usweightClass from the following sequence:
 
     Check the filename's suffix
@@ -94,8 +101,7 @@ def get_weightclass(ttfont, filename):
     Check if the nametable's style name contains the style
     """
     weight_from_file = get_weightclass_by_filename(filename)
-    weight_from_font = get_weightclass_by_name_tbl(ttfont)
-    return weight_from_file if weight_from_file else weight_from_font
+    return weight_from_file
 
 
 def parse_metadata(font):
@@ -111,11 +117,14 @@ def get_nametable(filepath, family_name=None, style_name=None):
 
 
 if __name__ == '__main__':
-    import pandas as pd 
-    from fontTools.ttLib import TTFont
-    repo_vs_production = pd.read_csv('./reports/repo_vs_production.csv', sep='\t')
-    # We only want to check fonts which match between the two sources
-    compatible_fonts = repo_vs_production['google/fonts compatible files']
-    for file in compatible_fonts:
-        font = TTFont(file)
-        print file, get_weightclass(font, file)
+    f = '/Users/marc/Documents/googlefonts/hotfix/bin/production_fonts_renamed/Poly-Italic.ttf'
+    font = TTFont(f)
+    from nototools import font_data
+    print font_data.get_name_records(font)
+
+    # nametbl = nametable_from_filename(f)
+    # font['name'] = nametbl
+    # fs_sel = get_fsselection(font)
+
+    print f, font
+
