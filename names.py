@@ -191,7 +191,10 @@ def nametable_from_filename(filepath, family_name=None, style_name=None):
 
   font_version = font['name'].getName(5, 3, 1, 1033)
   font_version = str(font_version).decode('utf_16_be')
-  vendor_id = font['OS/2'].achVendID
+
+  vendor_re_pattern = r'[0-9A-Z]{4}'
+  v_search = re.search(vendor_re_pattern, font['OS/2'].achVendID)
+  vendor_id = v_search.group() if v_search else 'UKWN'
 
   # SET MAC NAME FIELDS
   # -------------------

@@ -95,14 +95,3 @@ def get_nametable(font_path):
         style_name=font_style
     )
     return gf_nametable
-
-
-if __name__ == '__main__':
-    f = '/Users/marc/Documents/googlefonts/hotfix/bin/production_fonts_renamed/Montserrat-Bold.ttf'
-    font = TTFont(f)
-    fs_sel = get_fsselection(font, f)
-    mac = get_macstyle(f)
-    weight = get_weightclass(f)
-
-    print f, fs_sel, mac, weight
-
