@@ -1,3 +1,5 @@
+"""Fix renamed production fonts"""
+
 import os
 from fontTools.ttLib import TTFont
 import pandas as pd
@@ -27,9 +29,8 @@ def fix_font(font_path, families_to_fix, dest):
         font['OS/2'].usWeightClass = gfspec.get_weightclass(font_path)
         font['OS/2'].fsType = gfspec.FSTYPE
         font['name'] = nametable
+        fontdata.increment_version_number(font, 0.001)
         font.save(dest_path)
-    else:
-        print 'Skipping %s, blacklisted' % font_name 
         print 'Font %s fixed and saved to %s' % (font_name, dest_path)
 
 
