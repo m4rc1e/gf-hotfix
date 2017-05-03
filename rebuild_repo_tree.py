@@ -113,6 +113,18 @@ def update_families_metadata_pb(gf_repo_path, families_codepages, families_2_upd
             update_family_metadata_file(path, families_codepages, gen_metadata_script)
 
 
+def replace_families_description_file(repo_cp_path, description_files, families_2_update):
+    src_descs = {basename(os.path.dirname(f)): f for f in description_files}
+
+    for path, r, files in os.walk(repo_cp_path):
+        folder = basename(path)
+        if folder in families_2_update:
+            dest_description_file = os.path.join(path, 'DESCRIPTION.en_us.html')
+            if os.path.isfile(dest_description_file):
+                os.remove(dest_description_file)
+                shutil.copy(src_descs[folder], dest_description_file)
+
+
 def main(gen_metadata_script):
     gf_repo_path = '/Users/marc/Documents/googlefonts/fonts'
     copy_repo_fonts_dir(gf_repo_path, repo_cp_path)
@@ -124,6 +136,9 @@ def main(gen_metadata_script):
     families_codepages = get_families_codepages(gf_collection)
     print 'Updating family METADATA.pb files'
     update_families_metadata_pb(repo_cp_path, families_codepages, families_2_update, gen_metadata_script)
+    print 'Replacing DESCRIPTION.en_us.html files'
+    description_files = get_fonts('./src/descriptions', filetype='.html')
+    replace_families_description_file(repo_cp_path, description_files, families_2_update)
  
 
 if __name__ == '__main__':
