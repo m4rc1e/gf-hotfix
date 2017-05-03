@@ -3,7 +3,7 @@ from fontTools.ttLib import TTFont
 
 import fontdata
 import utils
-
+from ntpath import basename
 
 NON_UNICASE_NAMES = [
     'IM FELL Great Primer',
@@ -67,6 +67,13 @@ NON_UNICASE_NAMES = [
     'Mountains of Christmas',
     
 ]
+
+def get_repo_name(filename):
+    """Converts a ttf font path into a gf repo font folder"""
+    if filename.endswith('.ttf'):
+        filename = filename[:-4].split('-')[0]
+        return basename(filename.lower().replace(' ', ''))
+    return None
 
 
 if __name__ == '__main__':

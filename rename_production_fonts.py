@@ -39,18 +39,6 @@ API_2_STYLENAMES = {
 }
 
 
-def copy_repo_fonts_dir(root_path):
-    if 'fonts' in root_path:
-        print 'Removing old google/fonts folder'
-        repo_cp_path = os.path.join('.', 'bin', 'repo_cp')
-        if os.path.isdir(repo_cp_path):
-            shutil.rmtree(repo_cp_path)
-        print 'Copying specified google/fonts folder, be patient 1.5gb'
-        shutil.copytree(root_path, repo_cp_path)
-    else:
-        print 'Path specified is not the fonts folder from fonts/google'
-
-
 def production_fontnames_2_real(gf_api_request):
     """list of tuples containing the hashed fontname and the generated real
     name"""
@@ -73,7 +61,6 @@ def rename_production_fonts_2_realnames(src_dir, out_dir, names):
 
 
 def main(root_path):
-    # copy_repo_fonts_dir(root_path)
     gf_api_request = api_request(gf_api_url)
     delete_files(production_fonts_renamed_dir)
     fontnames = production_fontnames_2_real(gf_api_request)

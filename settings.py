@@ -18,3 +18,5 @@ production_fonts_fixed_dir = os.path.join(
     'bin',
     'production_fonts_fixed'
 )
+
+repo_cp_path = os.path.join('.', 'bin', 'repo_cp')

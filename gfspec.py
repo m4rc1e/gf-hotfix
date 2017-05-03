@@ -1,4 +1,3 @@
-from nototools import font_data
 from ntpath import basename
 from fontTools.ttLib import TTFont
 
