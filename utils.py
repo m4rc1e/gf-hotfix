@@ -5,11 +5,11 @@ import os
 import json
 
 
-def get_fonts(root_path):
+def get_fonts(root_path, filetype='.ttf'):
     fonts = []
     for path, r, files in os.walk(root_path):
         for f in files:
-            if f.endswith('.ttf'):
+            if f.endswith(filetype):
                 fonts.append(os.path.join(path, f))
     return fonts
 
