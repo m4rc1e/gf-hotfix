@@ -35,12 +35,13 @@ def fix_font(font_path, families_to_fix, dest):
 
 
 def main():
-    broken_families_doc = pd.read_csv('./reports/hotfix_failed_families.csv', delimiter='\t', encoding='utf-8')
+    broken_families_doc = pd.read_csv('./reports/current_failed_families.csv', delimiter='\t', encoding='utf-8')
     broken_families = list(broken_families_doc['family'])
 
     renamed_prod_fonts = get_fonts(production_fonts_renamed_dir)
     delete_files(production_fonts_fixed_dir)
     fix_fonts(renamed_prod_fonts, broken_families, production_fonts_fixed_dir)
+
 
 if __name__ == '__main__':
     main()
