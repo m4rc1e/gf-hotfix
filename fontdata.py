@@ -14,6 +14,11 @@ def get_familyname(ttfont):
     return name
 
 
+def get_version(ttfont):
+    """Return the font version from the head table to 3 decimal places"""
+    return '%.3f' % ttfont['head'].fontRevision
+
+
 def is_canonical(filename):
     if '-' in filename:
         return True
