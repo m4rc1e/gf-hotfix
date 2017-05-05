@@ -124,15 +124,15 @@ def replace_families_description_file(repo_cp_path, description_files, families_
 
 
 def main():
-    # print 'cloning google/fonts'
-    # if os.path.isdir(repo_cp_path):
-    #     shutil.rmtree(repo_cp_path)
-    # subprocess.call(['git', 'clone', repo_url, repo_cp_path])
+    print 'cloning google/fonts'
+    if os.path.isdir(repo_cp_path):
+        shutil.rmtree(repo_cp_path)
+    subprocess.call(['git', 'clone', repo_url, repo_cp_path])
 
-    # print 'Replacing broken fonts with fixed fonts'
+    print 'Replacing broken fonts with fixed fonts'
     fonts_2_package = get_fonts(production_fonts_fixed_dir)
     families_2_update = set([get_repo_name(f) for f in fonts_2_package])
-    # swap_repo_fonts(fonts_2_package, repo_cp_path, families_2_update)
+    swap_repo_fonts(fonts_2_package, repo_cp_path, families_2_update)
 
     print 'Updating family METADATA.pb files'
     gf_collection = api_request(gf_api_url)
@@ -145,8 +145,4 @@ def main():
  
 
 if __name__ == '__main__':
-    # gf_collection = api_request(gf_api_url)
-    # families_codepages = get_families_codepages(gf_collection)
-    # update_family_metadata_file('/Users/marc/Documents/googlefonts/hotfix/out/repo_cp/apache/droidsans', families_codepages)
-    # update_family_metadata_file('/Users/marc/Documents/googlefonts/hotfix/out/repo_cp/ofl/alegreya', families_codepages)
     main()
