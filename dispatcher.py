@@ -20,7 +20,6 @@ import git
 from datetime import datetime
 from ntpath import basename
 from fontTools.ttLib import TTFont
-import json
 import shutil
 import subprocess
 
@@ -29,7 +28,7 @@ import fontdata
 from utils import get_fonts
 
 
-DAILY_CHUNK = 40  # how many families to pr when running script
+DAILY_CHUNK = 100  # how many families to pr when running script
 
 
 def parse_cmdln_date(d):
