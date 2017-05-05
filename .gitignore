@@ -3,3 +3,4 @@ env/
 reports/
 *.pyc
 _*
+out/
