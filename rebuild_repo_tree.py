@@ -110,6 +110,7 @@ def update_family_metadata_file(path, families_codepages, gen_metadata_script):
 def update_families_metadata_pb(gf_repo_path, families_codepages, families_2_update, gen_metadata_script):
     for path, r, files in os.walk(gf_repo_path):
         if basename(path) in families_2_update:
+            print 'updating meta for %s' % path
             update_family_metadata_file(path, families_codepages, gen_metadata_script)
 
 
@@ -142,13 +143,6 @@ def main(gen_metadata_script):
  
 
 if __name__ == '__main__':
-    # meta_script = '/Users/marc/Documents/googlefonts/fonts/tools/add_font.py'
-    # gf_tools = os.path.dirname(meta_script)
-    # os.chdir(gf_tools)
-    # p = '/Users/marc/Documents/googlefonts/hotfix/bin/repo_cp/ofl/acme'
-    # code_p = {'Acme': ['vietnamese', 'menu', 'latin', 'latin-ext']}
-    # update_family_metadata_file(p, code_p, meta_script)
-
     if len(sys.argv) != 2:
         print 'Add path to add_font.py script'
     else:
