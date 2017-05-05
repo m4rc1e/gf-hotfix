@@ -35,12 +35,12 @@ def check_nametable(real_nametable, desired_nametable):
 
 def check_fname_field(real_name_tbl, desired_name_tbl, name):
     real, desired = None, None
-    if hasattr(real_name_tbl, 'names'):
-        real = real_name_tbl.getName(*name)
-        real = real.string.decode('utf_16_be') if real else None
-    if hasattr(desired_name_tbl, 'names'):
-        desired = desired_name_tbl.getName(*name)
-        desired = desired.string.decode('utf_16_be') if desired else None
+
+    real = real_name_tbl.getName(*name)
+    real = unicode(real.string, 'utf_16_be') if real else None
+
+    desired = desired_name_tbl.getName(*name)
+    desired = unicode(desired.string) if desired else None
 
     return check_font_attrib(real, desired)
 
@@ -86,12 +86,10 @@ def check_fonts(fonts_tree, report_suffix):
 
 
                 row.insert(0, font_path)
-                row.insert(1, fontdata.is_canonical(font_path))
                 table.append(row)
 
     df_columns = [
         'file',
-        'canonical',
 
         'fsselection-F',
         'fsselection-W',
@@ -141,7 +139,6 @@ def check_fonts(fonts_tree, report_suffix):
 
     # # passed families only
     df_passed = df[
-        (df['canonical'] == True) & \
         (df['macstyle'] == 'PASS') & \
         (df['fsselection'] == 'PASS') & \
         (df['fstype'] == 'PASS') & \
@@ -158,7 +155,6 @@ def check_fonts(fonts_tree, report_suffix):
 
     # # failed families only
     df_failed = df[
-        (df['canonical'] == True) & \
         (df['macstyle'] == 'FAIL') | \
         (df['fsselection'] == 'FAIL') | \
         (df['fstype'] == 'FAIL') | \
@@ -179,7 +175,4 @@ def check_fonts(fonts_tree, report_suffix):
     failed_families = sorted(failed_families)
 
     df_failed_families = pd.DataFrame(failed_families, columns=['family'])
-    df_failed_families.to_csv('./reports/%s_families.csv' % report_suffix, sep='\t', encoding='utf-8', index=False)
-
-    non_canonical = df[df['canonical'] == False]
-    non_canonical.to_csv('./reports/%s_non_canonical.csv' % report_suffix, sep='\t', encoding='utf-8', index=False)
+    df_failed_families.to_csv('./reports/%s_failed_families.csv' % report_suffix, sep='\t', encoding='utf-8', index=False)
