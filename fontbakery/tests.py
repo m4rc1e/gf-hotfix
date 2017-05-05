@@ -34,7 +34,12 @@ class TestGFSpec(unittest.TestCase):
 
         self.assertEqual(gfspec.get_weightclass('Family-Regular.ttf'), 400)
         self.assertEqual(gfspec.get_weightclass('Family-Italic.ttf'), 400)
-        
+
+    def test_parsemetadata(self):
+        self.assertEqual(gfspec.parse_metadata('Family-Bold.ttf'), (True, False))
+        self.assertEqual(gfspec.parse_metadata('Family-BoldItalic.ttf'), (True, True))
+        self.assertEqual(gfspec.parse_metadata('Family-Italic.ttf'), (False, True))
+
 
 
 if __name__ == '__main__':
