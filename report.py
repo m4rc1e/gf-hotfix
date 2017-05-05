@@ -1,19 +1,15 @@
 """
 Run font checks.
 
-Checks are conducted on fonts which match betweeen fonts.google.com
-and a local version google/fonts repo.
+Generates reports which are written to ./reports
 """
-import sys
-from fontTools.ttLib import TTFont, newTable
+from fontTools.ttLib import TTFont
 import pandas as pd
-from ntpath import basename
 
 from fontbakery import fontdata
 from fontbakery import gfspec
 import blacklist
 from fontbakery import utils
-from settings import production_fonts_fixed_dir
 
 
 def check_font_attrib(real, desired):
