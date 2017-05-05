@@ -1,6 +1,4 @@
-from fontTools.ttLib import TTFont
 import re
-
 import gfspec
 
 
@@ -27,9 +25,8 @@ def is_canonical(filename):
 def increment_version_number(ttfont, inc):
     """Increment a fonts version number.
 
-    Update the name records and head.fontRevision.
-    If a versions name records is badly formatted,
-    create one from the head.fontRevision."""
+    Update the name records and head.fontRevision. If a versions name records
+    is badly formatted, create a new one from the head.fontRevision."""
     version_pattern = r'[0-9]{1,4}\.[0-9]{1,4}'
     name_table = ttfont['name']
     for name in name_table.names:
