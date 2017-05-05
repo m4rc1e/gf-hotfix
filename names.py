@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # Copyright 2013,2016 The Font Bakery Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -110,7 +111,7 @@ def _mac_subfamily_name(style_name):
 def _unique_id(version, vendor_id, filename):
   # Glyphsapp style 2.000;MYFO;Arsenal-Bold
   # version;vendorID;filename
-  return '%s;%s;%s' % (version, vendor_id, filename)
+  return str('%s;%s;%s' % (version, vendor_id, filename))
 
 
 def _version(text, head_version):
@@ -201,72 +202,67 @@ def nametable_from_filename(filepath, family_name=None, style_name=None):
   # Copyright
   old_cp = old_table.getName(0, 3, 1, 1033)
   if not old_cp:
-    old_cp = 'Copyright %s The %s Project Authors' % (
+    cp = 'Copyright %s The %s Project Authors' % (
       datetime.fromtimestamp(font['head'].created / 2.60564).year,
       family_name
     )
+    new_table.setName(unicode(cp, 'utf-8'), 0, 1, 0, 0)
+    new_table.setName(unicode(cp, 'utf-8'), 0, 3, 1, 1033)
   else:
-    old_cp = old_cp.string.decode('utf_16_be')
-  new_table.setName(old_cp.encode('mac_roman'), 0, 1, 0, 0)
-  # Font Family Name
-  new_table.setName(family_name.encode('mac_roman'), 1, 1, 0, 0)
-  # Subfamily name
-  mac_subfamily_name = _mac_subfamily_name(style_name).encode('mac_roman')
-  new_table.setName(mac_subfamily_name, 2, 1, 0, 0)
-  # Unique ID
+    old_cp = unicode(old_cp.string, 'utf_16_be')
+    new_table.setName(unicode(old_cp.encode('mac-roman', errors='ignore'), 'mac-roman'), 0, 1, 0, 0)
+    new_table.setName(unicode(old_cp), 0, 3, 1, 1033)
+
+  # # # Font Family Name
+  new_table.setName(unicode(family_name, 'utf-8'), 1, 1, 0, 0)
+
+  win_family_name = _win_family_name(family_name, style_name)
+  new_table.setName(unicode(win_family_name, 'utf-8'), 1, 3, 1, 1033)
+
+  # # # Subfamily name
+  mac_subfamily_name = _mac_subfamily_name(style_name)
+  new_table.setName(unicode(mac_subfamily_name, 'utf-8'), 2, 1, 0, 0)
+  
+  win_subfamily_name = _win_subfamily_name(style_name)
+  new_table.setName(unicode(win_subfamily_name, 'utf-8'), 2, 3, 1, 1033)
+
+  # # Unique ID
   unique_id = _unique_id(
     _version(font_version, font['head'].fontRevision),
     vendor_id,
     filename
   )
-  mac_unique_id = unique_id.encode('mac_roman')
-  new_table.setName(mac_unique_id, 3, 1, 0, 0)
-  # Full name
+  new_table.setName(unicode(unique_id, 'utf-8', errors='ignore'), 3, 1, 0, 0)
+  new_table.setName(unicode(unique_id, 'utf-8'), 3, 3, 1, 1033)
+
+  # # Full name
   fullname = _full_name(family_name, style_name)
-  mac_fullname = fullname.encode('mac_roman')
-  new_table.setName(mac_fullname, 4, 1, 0, 0)
-  # Version string
+  new_table.setName(unicode(fullname, 'utf-8', errors='ignore'), 4, 1, 0, 0)
+  new_table.setName(unicode(fullname, 'utf-8'), 4, 3, 1, 1033)
+
+  # # # Version string
   old_v = old_table.getName(5, 3, 1, 1033)
   if old_v:
-    old_v = old_v.string.decode('utf_16_be')
+    old_v = unicode(old_v.string, 'utf_16_be')
+    new_table.setName(unicode(old_v), 5, 1, 0, 0)
+    new_table.setName(unicode(old_v), 5, 3, 1, 1033)
   else:
     old_v = 'Version %s' % font['head'].fontRevision
-  mac_old_v = old_v.encode('mac_roman')
-  new_table.setName(mac_old_v, 5, 1, 0, 0)
-  # Postscript name
-  mac_ps_name = filename.encode('mac_roman')
-  new_table.setName(mac_ps_name, 6, 1, 0, 0)
+    new_table.setName(unicode(old_v, 'utf-8'), 5, 1, 0, 0)
+    new_table.setName(unicode(old_v, 'utf-8'), 5, 3, 1, 1033)
 
-  # SET WIN NAME FIELDS
-  # -------------------
-  # Copyright
-  new_table.setName(old_cp, 0, 3, 1, 1033)
-  # Font Family Name
-  win_family_name = _win_family_name(family_name, style_name)
-  win_family_name = win_family_name.encode('utf_16_be')
-  new_table.setName(win_family_name, 1, 3, 1, 1033)
-  # Subfamily Name
-  win_subfamily_name = _win_subfamily_name(style_name).encode('utf_16_be')
-  new_table.setName(win_subfamily_name, 2, 3, 1, 1033)
-  # Unique ID
-  win_unique_id = unique_id.encode('utf_16_be')
-  new_table.setName(win_unique_id, 3, 3, 1, 1033)
-  # Full name
-  win_fullname = fullname.encode('utf_16_be')
-  new_table.setName(win_fullname, 4, 3, 1, 1033)
-  # Version string
-  win_old_v = old_v.encode('utf_16_be')
-  new_table.setName(win_old_v, 5, 3, 1, 1033)
-  # Postscript name
-  win_ps_name = filename.encode('utf_16_be')
-  new_table.setName(win_ps_name, 6, 3, 1, 1033)
+  # # Postscript name
+  ps_name = filename
+  new_table.setName(unicode(ps_name, 'utf-8'), 6, 1, 0, 0)
+  new_table.setName(unicode(ps_name, 'utf-8'), 6, 3, 1, 1033)
 
+  # add namedIDs 16, 17 to win records if they're not in winsafe
   if style_name not in WIN_SAFE_STYLES:
     # Preferred Family Name
-    new_table.setName(family_name.encode('utf_16_be'), 16, 3, 1, 1033)
+    new_table.setName(unicode(family_name, 'utf-8'), 16, 3, 1, 1033)
     # Preferred SubfamilyName
-    win_pref_subfam_name = _mac_subfamily_name(style_name).encode('utf_16_be')
-    new_table.setName(win_pref_subfam_name, 17, 3, 1, 1033)
+    win_pref_subfam_name = _mac_subfamily_name(style_name)
+    new_table.setName(unicode(win_pref_subfam_name, 'utf-8'), 17, 3, 1, 1033)
 
   # PAD missing fields
   # ------------------
@@ -275,15 +271,18 @@ def nametable_from_filename(filepath, family_name=None, style_name=None):
     if new_table.getName(*field):
       pass  # Name has already been updated
     elif old_table.getName(*field):
-      text = old_table.getName(*field).string
+      enc = old_table.getName(*field).getEncoding()
+      text = old_table.getName(*field).string.decode(enc)
     elif old_table.getName(field[0], 3, 1, 1033):
-      text = old_table.getName(field[0], 3, 1, 1033).string.decode('utf_16_be')
+      enc = 'utf_16_be'
+      text = unicode(old_table.getName(field[0], 3, 1, 1033).string, 'utf_16_be')
     elif old_table.getName(field[0], 1, 0, 0):  # check if field exists for mac
-      text = old_table.getName(field[0], 3, 1, 1033).string.decode('mac_roman')
+      enc = 'mac-roman'
+      text = unicode(old_table.getName(field[0], 1, 0, 0).string, 'mac-roman')
 
     if text:
-      enc = 'utf_16_be' if field[0] == 3 else 'mac_roman'
-      new_table.setName(text.encode(enc), *field)
+      new_enc = 'mac-roman' if field[1] == 1 else 'utf_16_be'
+      new_table.setName(unicode(text.encode(new_enc), new_enc), *field)
   return new_table
 
 
@@ -312,8 +311,4 @@ def main():
 
 
 if __name__ == '__main__':
-  path = '../fonts/ofl/josefinsans/JosefinSans-Regular.ttf'
-  font = TTFont(path)
-  nametbl = nametable_from_filename(path, family_name='Exo', style_name='BoldItalic')
-  for name in nametbl.names:
-    print name.string
+  main()
