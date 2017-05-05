@@ -6,8 +6,7 @@ import gfspec
 
 def get_familyname(ttfont):
     """Get the name of a font file"""
-    name = ttfont['name'].getName(1, 3, 1, 1033).string
-    name = name.decode('utf_16_be')
+    name = ttfont['name'].getName(1, 3, 1, 1033).string.decode('utf_16_be')
     for style in gfspec.STYLES:
         if style in name:
             name = name.replace(' '+style, '')
@@ -37,7 +36,7 @@ def increment_version_number(ttfont, inc):
 
         if name.nameID in [3, 5]:
             enc = 'mac-roman' if name.langID == 0 else 'utf_16_be'
-            record_text = name.string.decode(enc)
+            record_text = name.string
 
             version = re.search(version_pattern, record_text)
 
