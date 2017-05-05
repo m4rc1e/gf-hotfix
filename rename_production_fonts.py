@@ -4,7 +4,6 @@ google/fonts repo.
 
 Store fonts which do not a folder in the repo in a _todo dir
 """
-import sys
 import os
 import shutil
 from ntpath import basename
