@@ -11,19 +11,14 @@ from ntpath import basename
 import subprocess
 
 from fontbakery.utils import api_request, get_fonts
-from settings import gf_api_url, production_fonts_fixed_dir, repo_cp_path
+from settings import (
+    gf_api_url,
+    production_fonts_fixed_dir,
+    repo_url,
+    repo_cp_path,
+    description_dir
+)
 from fontbakery.gfcollection import get_repo_name
-
-
-def copy_repo_fonts_dir(root_path, repo_cp_path):
-    if 'fonts' in root_path:
-        print 'Removing old google/fonts folder'
-        if os.path.isdir(repo_cp_path):
-            shutil.rmtree(repo_cp_path)
-        print 'Copying specified google/fonts folder, be patient 1.5gb'
-        shutil.copytree(root_path, repo_cp_path)
-    else:
-        print 'Path specified is not the fonts folder from fonts/google'
 
 
 def get_families_codepages(gf_api_json):
@@ -69,7 +64,7 @@ def swap_repo_fonts(fonts_2_package, gf_repo_path, families_2_update):
     add_repo_fonts(gf_repo_path, fonts_2_package, families_2_update)
 
 
-def update_family_metadata_file(path, families_codepages, gen_metadata_script):
+def update_family_metadata_file(path, families_codepages):
     path = os.path.join(os.getcwd(), path)
     metadata_path = os.path.join(path, 'METADATA.pb')
 
@@ -82,11 +77,12 @@ def update_family_metadata_file(path, families_codepages, gen_metadata_script):
         with open(metadata_dup, 'r') as meta:
             meta = meta.readlines()[:5]
             for item in meta:
-                new_metadata.append(item.decode('utf-8'))
+                new_metadata.append(str(item))
 
         c_dir = os.getcwd()
-        os.chdir(os.path.dirname(gen_metadata_script))
-        # generate a new METADATA.pb file
+        os.chdir(os.path.join(repo_cp_path, 'tools'))
+        # generate a new METADATA.pb file.
+        # Script only works from the same directory
         subprocess.call(['python', 'add_font.py', path])
         os.chdir(c_dir)
 
@@ -94,24 +90,25 @@ def update_family_metadata_file(path, families_codepages, gen_metadata_script):
             meta_text = genned_metadata.read()
             fonts_records = re.findall(r'fonts \{.*\}', meta_text, re.MULTILINE|re.DOTALL)
             for font_record in fonts_records:
-                new_metadata.append(font_record + '\n')
+                new_metadata.append(str(font_record + '\n'))
 
             fam_name = new_metadata[0][7:-2]
+            # subsets are taken from api instead of METADATA.pb.
+            # We should not be adding new ones
             for subset in families_codepages[fam_name]:
-                new_metadata.append('subsets: "%s"\n' % subset.lower())
+                new_metadata.append(str('subsets: "%s"\n' % subset.lower()))
 
         with open(metadata_path, 'w') as regenned_metadata:
-            text = ''.join(new_metadata).encode('utf-8')
+            text = ''.join(new_metadata)
             regenned_metadata.write(text)
-
         os.remove(metadata_dup)
 
 
-def update_families_metadata_pb(gf_repo_path, families_codepages, families_2_update, gen_metadata_script):
+def update_families_metadata_pb(gf_repo_path, families_codepages, families_2_update):
     for path, r, files in os.walk(gf_repo_path):
         if basename(path) in families_2_update:
             print 'updating meta for %s' % path
-            update_family_metadata_file(path, families_codepages, gen_metadata_script)
+            update_family_metadata_file(path, families_codepages)
 
 
 def replace_families_description_file(repo_cp_path, description_files, families_2_update):
@@ -126,24 +123,30 @@ def replace_families_description_file(repo_cp_path, description_files, families_
                 shutil.copy(src_descs[folder], dest_description_file)
 
 
-def main(gen_metadata_script):
-    gf_repo_path = '/Users/marc/Documents/googlefonts/fonts'
-    copy_repo_fonts_dir(gf_repo_path, repo_cp_path)
+def main():
+    # print 'cloning google/fonts'
+    # if os.path.isdir(repo_cp_path):
+    #     shutil.rmtree(repo_cp_path)
+    # subprocess.call(['git', 'clone', repo_url, repo_cp_path])
+
+    # print 'Replacing broken fonts with fixed fonts'
     fonts_2_package = get_fonts(production_fonts_fixed_dir)
     families_2_update = set([get_repo_name(f) for f in fonts_2_package])
-    print 'Replacing broken fonts with fixed fonts'
-    swap_repo_fonts(fonts_2_package, repo_cp_path, families_2_update)
+    # swap_repo_fonts(fonts_2_package, repo_cp_path, families_2_update)
+
+    print 'Updating family METADATA.pb files'
     gf_collection = api_request(gf_api_url)
     families_codepages = get_families_codepages(gf_collection)
-    print 'Updating family METADATA.pb files'
-    update_families_metadata_pb(repo_cp_path, families_codepages, families_2_update, gen_metadata_script)
+    update_families_metadata_pb(repo_cp_path, families_codepages, families_2_update)
+
     print 'Replacing DESCRIPTION.en_us.html files'
-    description_files = get_fonts('./src/descriptions', filetype='.html')
+    description_files = get_fonts(description_dir, filetype='.html')
     replace_families_description_file(repo_cp_path, description_files, families_2_update)
  
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print 'Add path to add_font.py script'
-    else:
-        main(sys.argv[-1])
+    # gf_collection = api_request(gf_api_url)
+    # families_codepages = get_families_codepages(gf_collection)
+    # update_family_metadata_file('/Users/marc/Documents/googlefonts/hotfix/out/repo_cp/apache/droidsans', families_codepages)
+    # update_family_metadata_file('/Users/marc/Documents/googlefonts/hotfix/out/repo_cp/ofl/alegreya', families_codepages)
+    main()
