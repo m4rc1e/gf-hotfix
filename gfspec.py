@@ -90,7 +90,7 @@ def get_nametable(font_path):
     font_style = filename.split('-')[-1]
     gf_nametable = nametable_from_filename(
         font_path,
-        family_name=family_name,
-        style_name=font_style
+        family_name=str(family_name),
+        style_name=str(font_style)
     )
     return gf_nametable
