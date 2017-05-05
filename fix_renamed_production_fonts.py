@@ -7,9 +7,9 @@ from fontTools.ttLib import TTFont
 import pandas as pd
 from ntpath import basename
 
-import gfspec
-import fontdata
-from utils import get_fonts, delete_files
+from fontbakery import gfspec
+from fontbakery import fontdata
+from fontbakery.utils import get_fonts, delete_files
 from settings import production_fonts_fixed_dir, production_fonts_renamed_dir
 
 

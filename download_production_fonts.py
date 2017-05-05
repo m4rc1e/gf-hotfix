@@ -5,7 +5,7 @@ import os
 import json
 import requests
 from settings import production_fonts_dir, gf_api_url
-from utils import download_files, delete_files, api_request
+from fontbakery.utils import download_files, delete_files, api_request
 
 
 def get_gf_font_urls(gf_fonts):

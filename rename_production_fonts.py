@@ -9,7 +9,7 @@ import os
 import shutil
 from ntpath import basename
 from settings import production_fonts_dir, production_fonts_renamed_dir, gf_api_url
-from utils import api_request, delete_files
+from fontbakery.utils import api_request, delete_files
 
 
 API_2_STYLENAMES = {

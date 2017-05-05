@@ -24,8 +24,8 @@ import shutil
 import subprocess
 
 from settings import repo_cp_path
-import fontdata
-from utils import get_fonts
+from fontbakery import fontdata
+from fontbakery.utils import get_fonts
 
 
 DAILY_CHUNK = 100  # how many families to pr when running script

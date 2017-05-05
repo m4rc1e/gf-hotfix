@@ -10,8 +10,8 @@ import sys
 import pandas as pd
 
 from settings import production_fonts_dir
-import fontdata
-from utils import get_fonts, hash_files
+from fontbakery import fontdata
+from fontbakery.utils import get_fonts, hash_files
 from fontTools.ttLib import TTFont
 
 

@@ -10,9 +10,9 @@ import shutil
 from ntpath import basename
 import subprocess
 
-from utils import api_request, get_fonts
+from fontbakery.utils import api_request, get_fonts
 from settings import gf_api_url, production_fonts_fixed_dir, repo_cp_path
-from gfcollection import get_repo_name
+from fontbakery.gfcollection import get_repo_name
 
 
 def copy_repo_fonts_dir(root_path, repo_cp_path):

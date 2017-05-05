@@ -9,10 +9,10 @@ from fontTools.ttLib import TTFont, newTable
 import pandas as pd
 from ntpath import basename
 
-import fontdata
-import gfspec
+from fontbakery import fontdata
+from fontbakery import gfspec
 import blacklist
-import utils
+from fontbakery import utils
 from settings import production_fonts_fixed_dir
 
 
