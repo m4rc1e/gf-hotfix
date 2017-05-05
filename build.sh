@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e # Stop script if we have any critical errors
-ADD_FONT_PATH=$1
 
 python download_production_fonts.py
 python rename_production_fonts.py
