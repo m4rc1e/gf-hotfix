@@ -20,4 +20,7 @@ production_fonts_fixed_dir = os.path.join(
     'production_fonts_fixed'
 )
 
+description_dir = os.path.join('src', 'descriptions')
+
+repo_url = 'https://github.com/google/fonts.git'
 repo_cp_path = os.path.join('.', 'out', 'repo_cp')
