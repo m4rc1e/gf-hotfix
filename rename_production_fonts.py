@@ -7,14 +7,9 @@ Store fonts which do not a folder in the repo in a _todo dir
 import sys
 import os
 import shutil
-import requests
-import json
 from ntpath import basename
 from settings import production_fonts_dir, production_fonts_renamed_dir, gf_api_url
 from utils import api_request, delete_files
-
-
-TODO = '_todo'
 
 
 API_2_STYLENAMES = {
@@ -60,15 +55,14 @@ def rename_production_fonts_2_realnames(src_dir, out_dir, names):
         shutil.copy(hashed_font_path, real_font_path)
 
 
-def main(root_path):
+def main():
     gf_api_request = api_request(gf_api_url)
+    if not os.path.isdir(production_fonts_renamed_dir):
+        os.mkdir(production_fonts_renamed_dir)
     delete_files(production_fonts_renamed_dir)
     fontnames = production_fontnames_2_real(gf_api_request)
     rename_production_fonts_2_realnames(production_fonts_dir, production_fonts_renamed_dir, fontnames)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        main(sys.argv[-1])
-    else:
-        'please add google/fonts repo path'
+    main()

@@ -19,6 +19,9 @@ def get_gf_font_urls(gf_fonts):
 def main():
     gf_api_request = api_request(gf_api_url)
     font_urls = get_gf_font_urls(gf_api_request)
+    if not os.path.isdir('out'):
+        os.mkdir('out')
+        os.mkdir(production_fonts_dir)
     delete_files(production_fonts_dir)
     download_files(font_urls, production_fonts_dir)
 

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Fix renamed production fonts"""
 
 import os
@@ -9,6 +11,7 @@ import gfspec
 import fontdata
 from utils import get_fonts, delete_files
 from settings import production_fonts_fixed_dir, production_fonts_renamed_dir
+
 
 def fix_fonts(fonts_paths, families_to_fix, dest):
     for font_path in fonts_paths:
@@ -39,6 +42,8 @@ def main():
     broken_families = list(broken_families_doc['family'])
 
     renamed_prod_fonts = get_fonts(production_fonts_renamed_dir)
+    if not os.path.isdir(production_fonts_fixed_dir):
+        os.mkdir(production_fonts_fixed_dir)
     delete_files(production_fonts_fixed_dir)
     fix_fonts(renamed_prod_fonts, broken_families, production_fonts_fixed_dir)
 
