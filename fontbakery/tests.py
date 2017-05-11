@@ -9,7 +9,7 @@ import unittest
 class TestUtils(unittest.TestCase):
 
     def setUp(self):
-        self.font_files = utils.get_fonts('./bin')
+        self.font_files = utils.get_fonts('./out')
         self.production_fonts = [TTFont(f) for f in self.font_files]
 
     def test_rebuild_font_filename(self):
