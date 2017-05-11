@@ -1,3 +1,4 @@
+import os
 import re
 import requests
 from fontTools.ttLib import TTFont
@@ -6,7 +7,6 @@ from StringIO import StringIO
 import fontdata
 import utils
 from ntpath import basename
-
 
 
 DOWNLOAD_FAMILY_PREFIX = 'https://fonts.google.com/download?family='
@@ -81,9 +81,12 @@ def get_repo_name(name):
         name = name[:-4].split('-')[0]
     return basename(name.lower().replace(' ', ''))
 
+#------------------
+# Following functions could really do with being refactored into a class or
+# a named tuple
 
 def family_exists(name):
-    """Check if a font family exists in the collection"""
+    """Check if a font family exists on fonts.google.com"""
     url_prefix = 'http://fonts.google.com/specimen/'
     dl_name = name.replace(' ', '+')
     url = url_prefix + dl_name
@@ -102,8 +105,41 @@ def download_family_zip(name):
     return None
 
 
+def get_license_file(name, dest=None):
+    """Return the license file of an existing family. Save it to a
+    destination if specified."""
+    known_licenses = ['LICENSE.txt', 'OFL.txt', 'LICENCE.txt']
+    if family_exists(name):
+        family_zip = download_family_zip(name)
+
+        for license in known_licenses:
+            if license in family_zip.namelist():
+                license_file = family_zip.open(license)
+
+                if dest:
+                    license_dest = os.path.join(dest, license)
+                    with open(license_dest, 'w') as doc:
+                        doc.write(license_file.read())
+                else:
+                    return license_file
+
+
+def license_type(name):
+    licenses = {
+        'LICENSE.txt': 'APACHE',
+        'OFL.txt': 'OFL',
+        'LICENCE.txt': 'UFL'
+    }
+    if family_exists(name):
+        family_zip = download_family_zip(name)
+
+        for license in licenses:
+            if license in family_zip.namelist():
+                return licenses[license]
 
 if __name__ == '__main__':
     
-    d = download_family_zip('Open Sans')
-    print d.namelist()
+    # d = download_family_zip('Open Sans')
+    # print d.namelist()
+
+    print license_type("Rokkitt")
