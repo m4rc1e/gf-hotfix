@@ -2,8 +2,6 @@
 Download all the fonts hosted on fonts.google.com
 """
 import os
-import json
-import requests
 from settings import production_fonts_dir, gf_api_url
 from fontbakery.utils import download_files, delete_files, api_request
 
