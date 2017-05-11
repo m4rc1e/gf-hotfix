@@ -1,9 +1,15 @@
 import re
+import requests
 from fontTools.ttLib import TTFont
 
 import fontdata
 import utils
 from ntpath import basename
+
+
+
+DOWNLOAD_FAMILY_PREFIX = 'https://fonts.google.com/download?family='
+
 
 NON_UNICASE_NAMES = [
     'IM FELL Great Primer',
@@ -68,19 +74,28 @@ NON_UNICASE_NAMES = [
     
 ]
 
-def get_repo_name(filename):
-    """Converts a ttf font path into a gf repo font folder"""
-    if filename.endswith('.ttf'):
-        filename = filename[:-4].split('-')[0]
-        return basename(filename.lower().replace(' ', ''))
-    return None
+def get_repo_name(name):
+    """Converts a ttf font path or font name into a gf repo font folder"""
+    if name.endswith('.ttf'):
+        name = name[:-4].split('-')[0]
+    return basename(name.lower().replace(' ', ''))
+
+
+def family_exists(name):
+    """Check if a font family exists in the collection"""
+    url_prefix = 'http://fonts.google.com/specimen/'
+    dl_name = name.replace(' ', '+')
+    url = DOWNLOAD_FAMILY_PREFIX + dl_name
+    request = requests.get(url)
+    if request.status_code == 200:
+        return True
+    return False
+
+
+def download_family(name):
+    """Downloads a family .zip file from fonts.google.com"""
+    
 
 
 if __name__ == '__main__':
-    # Get NON_UNICASE_NAMES
-    prod_fonts = utils.get_fonts('./bin')
-    font_names = [fontdata.get_familyname(TTFont(p)) for p in prod_fonts]
-
-    for name in set(font_names):
-        if re.search(r"(?<=\w)([A-Z])", name):
-            print "'%s'," % name
+    print family_exists('Open Sans')
