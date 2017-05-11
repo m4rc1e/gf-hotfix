@@ -3,7 +3,7 @@ import shutil
 import hashlib
 import os
 import json
-
+from StringIO import StringIO
 
 def get_fonts(root_path, filetype='.ttf'):
     fonts = []
@@ -38,8 +38,10 @@ def api_request(url):
     return json.loads(api_request.text)
 
 
-def download_file(url, dest, log=True):
+def download_file(url, dest=None, log=True):
     """Download a file from a url to a specified destination.
+    If no location is given, store file in memory as a
+    StringIO object.
 
     Implementation handles larger files by breaking them down
     into chunks."""
@@ -47,10 +49,18 @@ def download_file(url, dest, log=True):
     r = requests.get(url, stream=True)
     if log:
         print 'Downloading %s to %s' % (url, dest)
-    with open(os.path.join(dest, filename), 'w') as f:
+    if dest:
+        with open(os.path.join(dest, filename), 'w') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+    else:
+        s = StringIO()
         for chunk in r.iter_content(chunk_size=1024):
             if chunk:
-                f.write(chunk)
+                s.write(chunk)
+        return s
+
 
 
 def delete_files(directory):
