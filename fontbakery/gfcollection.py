@@ -1,7 +1,8 @@
 import re
 import requests
 from fontTools.ttLib import TTFont
-
+from zipfile import ZipFile
+from StringIO import StringIO
 import fontdata
 import utils
 from ntpath import basename
@@ -92,10 +93,17 @@ def family_exists(name):
     return False
 
 
-def download_family(name):
+def download_family_zip(name):
     """Downloads a family .zip file from fonts.google.com"""
-    
+    if family_exists(name):
+        dl_url = DOWNLOAD_FAMILY_PREFIX + name.replace(' ', '+')
+        family_zip = utils.download_file(dl_url)
+        return ZipFile(family_zip)
+    return None
+
 
 
 if __name__ == '__main__':
-    print family_exists('Open Sans')
+    
+    d = download_family_zip('Open Sans')
+    print d.namelist()
