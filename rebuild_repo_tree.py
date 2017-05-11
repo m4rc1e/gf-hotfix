@@ -100,7 +100,11 @@ def update_family_metadata_file(path, families_codepages):
 
         with open(metadata_path, 'w') as regenned_metadata:
             text = ''.join(new_metadata)
-            regenned_metadata.write(text)
+            text = text.replace('\\r\\n', ' ')
+            text = text.replace('\\n\\r', ' ')
+            text = text.replace('\\r', ' ')
+            text = text.replace('\\n', ' ')
+            regenned_metadata.write(text) 
         os.remove(metadata_dup)
 
 
