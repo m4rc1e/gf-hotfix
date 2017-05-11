@@ -85,7 +85,7 @@ def family_exists(name):
     """Check if a font family exists in the collection"""
     url_prefix = 'http://fonts.google.com/specimen/'
     dl_name = name.replace(' ', '+')
-    url = DOWNLOAD_FAMILY_PREFIX + dl_name
+    url = url_prefix + dl_name
     request = requests.get(url)
     if request.status_code == 200:
         return True
