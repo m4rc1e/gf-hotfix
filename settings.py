@@ -20,6 +20,12 @@ production_fonts_fixed_dir = os.path.join(
     'production_fonts_fixed'
 )
 
+repo_missing_fonts = os.path.join(
+    os.path.dirname(__file__),
+    'out',
+    'repo_missing_fonts'
+)
+
 description_dir = os.path.join('src', 'descriptions')
 
 repo_url = 'https://github.com/google/fonts.git'
