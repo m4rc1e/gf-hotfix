@@ -8,16 +8,16 @@ Find families which are not in local repo of google/fonts
 """
 import sys
 import pandas as pd
-
-from settings import production_fonts_dir
-from fontbakery import fontdata
-from fontbakery.utils import get_fonts, hash_files
 from fontTools.ttLib import TTFont
 
+from settings import production_fonts_dir, repo_cp_path
+from fontbakery import fontdata
+from fontbakery.utils import get_fonts, hash_files
 
-def main(fonts_tree_path):
+
+def main():
     
-    repo_fonts = get_fonts(fonts_tree_path)
+    repo_fonts = get_fonts(repo_cp_path)
     prod_fonts = get_fonts(production_fonts_dir)
     
     repo_hashed_fonts = hash_files(repo_fonts)
@@ -63,6 +63,6 @@ def main(fonts_tree_path):
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
-        main(sys.argv[-1])
+        main()
     else:
         print 'include path to local version of google/fonts repo'
