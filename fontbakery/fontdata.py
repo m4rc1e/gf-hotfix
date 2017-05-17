@@ -2,6 +2,68 @@ import re
 import gfspec
 
 
+NON_UNICASE_NAMES = {
+    'IMFELLGreatPrimer': 'IM FELL Great Primer',
+    'BiryaniUltraLight': 'Biryani UltraLight',
+    'CantoraOne': 'CantoraOne',
+    'IMFELLDoublePicaSC': 'IM FELL Double Pica SC',
+    'IMFELLGreatPrimerSC': 'IM FELL Great Primer SC',
+    'UnifrakturMaguntia': 'UnifrakturMaguntia',
+    'PlayfairDisplaySC': 'Playfair Display SC',
+    'PTSerifCaption': 'PT Serif Caption',
+    'NTR': 'NTR',
+    'MontserratAlternatesExLight': 'Montserrat Alternates ExLight',
+    'DiplomataSC': 'Diplomata SC',
+    'McLaren': 'McLaren',
+    'OdorMeanChey': 'OdorMeanChey',
+    'PTSans': 'PT Sans',
+    'VT323': 'VT323',
+    'GFSDidot': 'GFS Didot',
+    'IMFELLFrenchCanon': 'IM FELL French Canon',
+    'PressStart2P': 'Press Start 2P',
+    'BenchNine': 'BenchNine',
+    'MartelUltraLight': 'Martel UltraLight',
+    'BioRhyme': 'BioRhyme',
+    'MateSC': 'Mate SC',
+    'SirinStencil': 'SirinStencil',
+    'CormorantSC': 'Cormorant SC',
+    'IMFELLEnglish': 'IM FELL English',
+    'IMFELLDWPicaSC': 'IM FELL DW Pica SC',
+    'HammersmithOne': 'HammersmithOne',
+    'OldStandardTT': 'Old Standard TT',
+    'NovaMono': 'NovaMono',
+    'AmaticSC': 'Amatic SC',
+    'AlmendraSC': 'Almendra SC',
+    'BioRhymeExpanded': 'BioRhyme Expanded',
+    'BiryaniDemiBold': 'Biryani DemiBold',
+    'IMFELLDoublePica': 'IM FELL Double Pica',
+    'PTSansCaption': 'PT Sans Caption',
+    'MartelDemiBold': 'Martel DemiBold',
+    'IMFELLEnglishSC': 'IM FELL English SC',
+    'HoltwoodOneSC': 'Holtwood One SC',
+    'EBGaramond': 'EB Garamond',
+    'CarroisGothicSC': 'Carrois Gothic SC',
+    'GFSNeohellenic': 'GFS Neohellenic',
+    'PTSansNarrow': 'PT Sans Narrow',
+    'MarcellusSC': 'Marcellus SC',
+    'IMFELLDWPica': 'IM FELL DW Pica',
+    'AmaticaSC': 'Amatica SC',
+    'OverlockSC': 'Overlock SC',
+    'MedievalSharp': 'MedievalSharp',
+    'PTSerif': 'PT Serif',
+    'IMFELLFrenchCanonSC': 'IM FELL French Canon SC',
+    'UnifrakturCook': 'UnifrakturCook',
+    'PatrickHandSC': 'Patrick Hand SC',
+    'PTMono': 'PT Mono',
+    'HeadlandOne': 'HeadlandOne',
+    'ABeeZee': 'ABeeZee',
+    'BowlbyOneSC': 'Bowlby One SC',
+    'AlegreyaSansSC': 'Alegreya Sans SC',
+    'AlegreyaSC': 'Alegreya SC',
+    'Exo2': 'Exo 2',
+    'MountainsofChristmas': 'Mountains of Christmas',
+}
+
 def get_familyname(ttfont):
     """Get the name of a font file"""
     name = ttfont['name'].getName(1, 3, 1, 1033).string.decode('utf_16_be')
@@ -9,6 +71,20 @@ def get_familyname(ttfont):
         if style in name:
             name = name.replace(' '+style, '')
     return name
+
+
+def familyname_from_filename(filename):
+    """Derive the family name from a filename
+    OpenSans-Regular.ttf -> Open Sans.
+
+    Warning: This method is not 100% accurate. Some filenames do not match
+    their font menu names, PT_Sans_Web etc."""
+    family_name = filename.split('-')[0]
+    family_name = family_name.replace('.ttf', '')
+    if family_name in NON_UNICASE_NAMES:
+        return NON_UNICASE_NAMES[family_name]
+    # RubikMonoOne -> Rubik Mono One
+    return re.sub('(?!^)([A-Z]|[0-9]+)', r'%s\1' % ' ', family_name)
 
 
 def get_version(ttfont):
