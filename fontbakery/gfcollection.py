@@ -1,5 +1,10 @@
 from ntpath import basename
+from datetime import datetime
 
+from utils import api_request
+
+
+gf_api_url = 'http://tinyurl.com/m8o9k39'
 
 
 NON_UNICASE_NAMES = [
@@ -70,3 +75,36 @@ def get_repo_name(name):
     if name.endswith('.ttf'):
         name = name[:-4].split('-')[0]
     return basename(name.lower().replace(' ', ''))
+
+
+class ProductionServer:
+    """Client wrapper for Google Fonts api"""
+    def __init__(self):
+        self.api_data = api_request(gf_api_url)
+
+    def modified_after(self, date):
+        """Return families which have been modified after a certain date"""
+        families = []
+        for item in self.api_data['items']:
+            item_date = self._parse_date(item['lastModified'])
+            date_t = self._parse_date(date)
+            if item_date >= date_t:
+                families.append(item)
+        return families
+
+    def _parse_date(self, date):
+        """Parse string date YYYY-MM-DD into datetime object"""
+        date_parsed = tuple(map(int, date.split('-')))
+        return datetime(*date_parsed)
+
+    @property
+    def family_count(self):
+        return len([f for f in self.api_data['items']])
+
+
+if __name__ == '__main__':
+    from pprint import pprint
+    c = ProductionServer()
+    prd_families_in_production = [f['family'] for f in c.modified_after('2017-03-01')]
+    print prd_families_in_production, len(prd_families_in_production)
+    print c.family_count
