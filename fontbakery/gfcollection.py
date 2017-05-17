@@ -1,74 +1,14 @@
 from ntpath import basename
 from datetime import datetime
+from github import Github
+import os
 
 from utils import api_request
+from fontdata import familyname_from_filename
 
 
 gf_api_url = 'http://tinyurl.com/m8o9k39'
 
-
-NON_UNICASE_NAMES = [
-    'IM FELL Great Primer',
-    'Biryani UltraLight',
-    'CantoraOne',
-    'IM FELL Double Pica SC',
-    'IM FELL Great Primer SC',
-    'UnifrakturMaguntia',
-    'Playfair Display SC',
-    'PT Serif Caption',
-    'NTR',
-    'Montserrat Alternates ExLight',
-    'Diplomata SC',
-    'McLaren',
-    'OdorMeanChey',
-    'PT Sans',
-    'VT323',
-    'GFS Didot',
-    'IM FELL French Canon',
-    'Press Start 2P',
-    'BenchNine',
-    'Martel UltraLight',
-    'BioRhyme',
-    'Mate SC',
-    'SirinStencil',
-    'Cormorant SC',
-    'IM FELL English',
-    'IM FELL DW Pica SC',
-    'HammersmithOne',
-    'Old Standard TT',
-    'NovaMono',
-    'Amatic SC',
-    'Almendra SC',
-    'BioRhyme Expanded',
-    'Biryani DemiBold',
-    'IM FELL Double Pica',
-    'PT Sans Caption',
-    'Martel DemiBold',
-    'IM FELL English SC',
-    'Holtwood One SC',
-    'EB Garamond',
-    'Carrois Gothic SC',
-    'GFS Neohellenic',
-    'PT Sans Narrow',
-    'Marcellus SC',
-    'IM FELL DW Pica',
-    'Amatica SC',
-    'Overlock SC',
-    'MedievalSharp',
-    'PT Serif',
-    'IM FELL French Canon SC',
-    'UnifrakturCook',
-    'Patrick Hand SC',
-    'PT Mono',
-    'HeadlandOne',
-    'ABeeZee',
-    'Bowlby One SC',
-    'Alegreya Sans SC',
-    'Alegreya SC',
-    'Exo 2',
-    'Mountains of Christmas',
-    
-]
 
 def get_repo_name(name):
     """Converts a ttf font path or font name into a gf repo font folder"""
@@ -92,7 +32,8 @@ class ProductionServer:
                 families.append(item)
         return families
 
-    def _parse_date(self, date):
+    @staticmethod
+    def _parse_date(date):
         """Parse string date YYYY-MM-DD into datetime object"""
         date_parsed = tuple(map(int, date.split('-')))
         return datetime(*date_parsed)
@@ -102,9 +43,40 @@ class ProductionServer:
         return len([f for f in self.api_data['items']])
 
 
-if __name__ == '__main__':
-    from pprint import pprint
-    c = ProductionServer()
-    prd_families_in_production = [f['family'] for f in c.modified_after('2017-03-01')]
-    print prd_families_in_production, len(prd_families_in_production)
-    print c.family_count
+class Repository:
+    """Client wrapper for google/fonts repository"""
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+        self.git = Github(username, password)
+        self.user = self.git.get_user('google')
+        self.repo = self.user.get_repo('fonts')        
+
+    def families_merged_after(self, date):
+        """Return families which have been merged"""
+        families = set()
+        print 'Analysing pull requests, be patient'
+        request_date = ProductionServer._parse_date(date)
+        for pull in self.repo.get_pulls('closed'):
+            if pull.merged and pull.created_at >= request_date:
+                self._get_families(families, pull)
+        return families
+
+    def families_unmerged_after(self, date):
+        """Return families which have open pull requests"""
+        families = set()
+        print 'Analysing pull requests, be patient'
+        request_date = ProductionServer._parse_date(date)
+        for pull in self.repo.get_pulls():
+            if pull.created_at >= request_date:
+                self._get_families(families, pull)
+        return families
+
+    def _get_families(self, families, pull):
+        """Check which families have been touched in the pr"""
+        for f in pull.get_files():
+            font_filename = os.path.basename(f.filename)
+            if '.ttf' in font_filename:
+                family = familyname_from_filename(font_filename)
+                families.add(family)
