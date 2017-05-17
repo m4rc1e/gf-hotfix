@@ -11,6 +11,7 @@ fonts = [
     'Martel Heavy',
     'Martel DemiBold',
     'Martel',
+    'Vollkorn ',
 ]
 
 existing_pr = [
@@ -142,6 +143,7 @@ existing_pr = [
     'Varela Round',
     'Vfbetas',
     'Vollkorn',
+    'Vollkorn ',
     'VT323',
     'Yaldevi Colombo',
     'Yaldevi Jaffna',
