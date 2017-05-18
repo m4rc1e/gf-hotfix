@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Fix renamed production fonts"""
+"""
+Fix renamed production fonts listed in the Broken families report.
+"""
 
 import os
 from fontTools.ttLib import TTFont
