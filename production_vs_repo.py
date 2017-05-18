@@ -1,6 +1,5 @@
 """
-Compare fonts from fonts.google.com which match fonts in a local 
-repo of google/fonts.
+Compare fonts in production against the fonts in google/fonts repository
 
 Find families which are not in fonts.google.com.
 
