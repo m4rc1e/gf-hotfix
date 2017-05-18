@@ -3,6 +3,7 @@ import shutil
 import hashlib
 import os
 import json
+from ntpath import basename
 from StringIO import StringIO
 
 def get_fonts(root_path, filetype='.ttf'):
@@ -12,6 +13,13 @@ def get_fonts(root_path, filetype='.ttf'):
             if f.endswith(filetype):
                 fonts.append(os.path.join(path, f))
     return fonts
+
+
+def get_folder(root_path, folder_name):
+    for path, r, files in os.walk(root_path):
+        if basename(path) == folder_name:
+            return path
+    return None
 
 
 def hash_files(files):
