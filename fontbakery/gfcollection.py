@@ -66,6 +66,12 @@ class Repository:
                 self._get_families(families, pull)
         return families
 
+    def families_pr_after(self, date):
+        """Return all families which may have open or merged prs"""
+        merged = self.families_merged_after(date)
+        unmerged = self.families_unmerged_after(date)
+        return merged | unmerged
+
     def _get_families(self, families, pull):
         """Check which families have been touched in the pr"""
         for f in pull.get_files():
