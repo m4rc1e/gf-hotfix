@@ -30,3 +30,6 @@ description_dir = os.path.join('src', 'descriptions')
 
 repo_url = 'https://github.com/google/fonts.git'
 repo_cp_path = os.path.join('.', 'out', 'repo_cp')
+
+sprint1_start = '2017-04-23'
+
