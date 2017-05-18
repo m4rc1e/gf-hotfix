@@ -17,30 +17,17 @@ families each day.
 import sys
 import os
 import git
-from datetime import datetime
 from ntpath import basename
 from fontTools.ttLib import TTFont
 import shutil
 import subprocess
 
-from settings import repo_cp_path
+from settings import repo_cp_path, sprint1_start
 from fontbakery import fontdata
 from fontbakery.utils import get_fonts
-
+from fontbakery.gfcollection import Repository
 
 DAILY_CHUNK = 100  # how many families to pr when running script
-
-
-def parse_cmdln_date(d):
-    d = d.split('/')
-    d = map(int, d)
-    d = tuple(d)
-    return datetime(*d)
-
-
-def families_dispatched(log_file):
-    with open(log_file, 'r') as log:
-        return log.read().splitlines()
 
 
 def get_family_dirs(repo_path):
@@ -52,12 +39,8 @@ def get_family_dirs(repo_path):
 def remove_dispatched_families(dirs, already_dispatched, usr_date):
     cleaned = {}
     for family_name, path in dirs.items():
-        family_modified_thresh = parse_cmdln_date(usr_date)
-        family_modified_date = datetime.fromtimestamp(os.path.getmtime(path))
-
-        if family_modified_date >= family_modified_thresh:
-            if family_name not in already_dispatched:
-                cleaned[family_name] = path
+        if family_name not in already_dispatched:
+            cleaned[family_name] = path
     return cleaned
 
 
@@ -116,25 +99,20 @@ def replace_families(src_paths, dest_paths):
         replace_family(src_path, dest_path)
 
 
-def log_replaced_families(log_file, families):
-    with open(log_file, 'a') as log:
-        log.write('\n'.join(families))
-        log.write('\n')
+def main(repo_path, username, password):
+    repo = Repository(username, password)
+    already_dispatched = repo.families_pr_after(sprint1_start)
+    already_dispatched_dir = [fontdata.get_repo_name(f) for f in already_dispatched]
 
-
-def main(repo_path, usr_date):
-    already_dispatched = families_dispatched("dispatched_log.txt")
     source_repo_dirs = get_family_dirs(repo_path)
     cp_repo_dirs = get_family_dirs(repo_cp_path)
-    dirs_2_dispatch = remove_dispatched_families(cp_repo_dirs, already_dispatched, usr_date)
+    dirs_2_dispatch = remove_dispatched_families(cp_repo_dirs, already_dispatched_dir)
     src_families, dest_families = get_swap_family_paths(dirs_2_dispatch, source_repo_dirs, limit=DAILY_CHUNK)
     replace_families(src_families, dest_families)
-    replaced_families = [basename(p) for p in src_families]
-    log_replaced_families("dispatched_log.txt", replaced_families)
 
         
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print 'please include path to ofl folder and date in format YYYY/MM/DD for folder to move'
+        print 'please include path to git enabled google/fonts repo and your git username and password'
     else:
         main(sys.argv[1], sys.argv[2])
