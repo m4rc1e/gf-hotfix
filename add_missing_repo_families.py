@@ -7,6 +7,7 @@ import shutil
 import os
 import subprocess
 from fontTools.ttLib import TTFont
+from ntpath import basename
 
 from fontbakery.utils import (
     api_request,
@@ -42,7 +43,6 @@ def get_families_directory(families):
         family_dir = get_family_directory(family)
         directories.append(family_dir)
     return directories
-        # break  # remove this later, lets test on just one family
 
 
 def get_family_directory(family):
@@ -148,16 +148,39 @@ def generate_families_metadata(directories):
     os.chdir(c_dir)
 
 
+def move_families_2_repo_cp(directories):
+    for directory in directories:
+        family = basename(directory)
+        if 'ofl' in directory:
+            target_dir = os.path.join(repo_cp_path, 'ofl', family)
+        elif 'ufl' in directory:
+            target_dir = os.path.join(repo_cp_path, 'ufl', family)
+        elif 'apache' in directory:
+            target_dir = os.path.join(repo_cp_path, 'apache', family)
+
+        print 'Copying %s to %s' % (directory, target_dir)
+        shutil.copytree(directory, target_dir)
+
+
 def main():
     if not os.path.isdir(repo_missing_fonts):
         os.mkdir(repo_missing_fonts)
     delete_files(repo_missing_fonts)
+
+    print 'Making missing families folders'
     families = families_2_add('./reports/repo_vs_production.csv')
     fixed_fonts = get_fonts(production_fonts_fixed_dir)
     directories = get_families_directory(families)
     move_fonts_2_directories(fixed_fonts, directories)
     generate_families_metadata(directories)
     get_previous_families_data(directories)
+
+    print 'Moving families to repo copy'
+    move_families_2_repo_cp(directories)
+
+    print 'Deleting temp missing repos folder'
+    shutil.rmtree(repo_missing_fonts)
+    print 'Missing families have been moved to the copied repo'
 
 
 if __name__ == '__main__':
