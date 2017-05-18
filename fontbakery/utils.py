@@ -15,6 +15,14 @@ def get_fonts(root_path, filetype='.ttf'):
     return fonts
 
 
+def get_folders(root_path, folders_name):
+    folders = []
+    for folder_name in folders_name:
+        folder = get_folder(root_path, folder_name)
+        folders.append(folder)
+    return folders
+
+
 def get_folder(root_path, folder_name):
     for path, r, files in os.walk(root_path):
         if basename(path) == folder_name:
