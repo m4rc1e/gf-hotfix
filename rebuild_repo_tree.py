@@ -18,7 +18,7 @@ from settings import (
     repo_cp_path,
     description_dir
 )
-from fontbakery.gfcollection import get_repo_name
+from fontbakery.fontdata import get_repo_name
 
 
 def get_families_codepages(gf_api_json):

@@ -10,13 +10,6 @@ from fontdata import familyname_from_filename
 gf_api_url = 'http://tinyurl.com/m8o9k39'
 
 
-def get_repo_name(name):
-    """Converts a ttf font path or font name into a gf repo font folder"""
-    if name.endswith('.ttf'):
-        name = name[:-4].split('-')[0]
-    return basename(name.lower().replace(' ', ''))
-
-
 class ProductionServer:
     """Client wrapper for Google Fonts api"""
     def __init__(self):

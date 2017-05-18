@@ -73,6 +73,13 @@ def get_familyname(ttfont):
     return name
 
 
+def get_repo_name(name):
+    """Converts a ttf font path or font name into a gf repo font folder"""
+    if name.endswith('.ttf'):
+        name = name[:-4].split('-')[0]
+    return basename(name.lower().replace(' ', ''))
+
+
 def familyname_from_filename(filename):
     """Derive the family name from a filename
     OpenSans-Regular.ttf -> Open Sans.

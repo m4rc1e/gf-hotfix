@@ -16,7 +16,7 @@ from fontbakery.utils import (
 )
 from fontbakery.gffamily import GFFont, family_api_info
 from fontbakery import fontdata
-from fontbakery.gfcollection import get_repo_name
+from fontbakery.fontdata import get_repo_name
 from settings import (
     gf_api_url,
     production_fonts_fixed_dir,
