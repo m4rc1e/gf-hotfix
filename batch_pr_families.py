@@ -68,14 +68,15 @@ def pr_family(src_path, dest_path):
 
 def pr_families(user_paths, dest_paths):
     for user_path, dest_path in zip(user_paths, dest_paths):
-        pr_family(user_path, dest_path)
+        if user_path and dest_path:
+            pr_family(user_path, dest_path)
 
 
 def create_missing_dest_paths(repo_path, user_dirs, dest_dirs):
     """If a destination directory does not exist, create a path for it"""
     dirs = []
     for user_dir, dest_dir in zip(user_dirs, dest_dirs):
-        if not dest_dir:
+        if user_dir and not dest_dir:
             dest_dir = repo_path + user_dir.replace(repo_cp_path, '')
         dirs.append(dest_dir)
     return dirs
@@ -100,6 +101,7 @@ def main():
         user_dirs = get_folders(repo_cp_path, families_2_dispatch)
         dest_dirs = get_folders(args.repo_path, families_2_dispatch)
         dest_dirs = create_missing_dest_paths(args.repo_path, user_dirs, dest_dirs)
+
         pr_families(user_dirs, dest_dirs)
     
     for family in args.families:
