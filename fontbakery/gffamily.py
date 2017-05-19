@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Client wrapper for the GF api which powers frontend of fonts.google.com.
-
-Get font information and download the zipped families.
+Client wrapper for the GF api which powers frontend of fonts.google.com and
+wrapper for downloading the zipped families.
 """
 import requests
 import json

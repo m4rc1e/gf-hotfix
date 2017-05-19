@@ -1,3 +1,6 @@
+"""
+Module containing helper functions to work with .ttf fonts.
+"""
 import re
 import gfspec
 from ntpath import basename

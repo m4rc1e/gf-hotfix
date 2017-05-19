@@ -1,3 +1,6 @@
+"""
+Module of useful helper functions to manipulate files/folders.
+"""
 import requests
 import shutil
 import hashlib
@@ -5,6 +8,7 @@ import os
 import json
 from ntpath import basename
 from StringIO import StringIO
+
 
 def get_fonts(root_path, filetype='.ttf'):
     fonts = []
@@ -24,6 +28,8 @@ def get_folders(root_path, folders_name):
 
 
 def get_folder(root_path, folder_name):
+    """Return the path to a folder if the folder exists in the
+    root path tree"""
     for path, r, files in os.walk(root_path):
         if basename(path) == folder_name:
             return path
@@ -76,7 +82,6 @@ def download_file(url, dest=None, log=True):
             if chunk:
                 s.write(chunk)
         return s
-
 
 
 def delete_files(directory):

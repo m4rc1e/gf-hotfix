@@ -1,4 +1,6 @@
-from ntpath import basename
+"""
+Wrapper for the production server api and git repository
+"""
 from datetime import datetime
 from github import Github
 import os

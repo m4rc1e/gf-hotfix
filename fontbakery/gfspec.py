@@ -1,9 +1,13 @@
+"""
+Module for determining if a font's metadata complies with the GF spec:
+https://github.com/googlefonts/gf-docs/blob/master/ProjectChecklist.md
+"""
 from ntpath import basename
 from fontTools.ttLib import TTFont
 
 from names import nametable_from_filename
 import fontdata
-from utils import get_fonts
+
 
 STYLES = [
     "Thin",
@@ -44,12 +48,14 @@ FSTYPE = 0
 
 
 def get_macstyle(filename):
+    """Infer the macstyle from a font's filename"""
     bold, italic = parse_metadata(filename)
     mac_style = (italic << 1) | bold
     return mac_style
 
 
 def get_fsselection(ttfont, filename):
+    """Infer the fsSelection bit from a font and its filename"""
     bold, italic = parse_metadata(filename)
 
     fsselection = ((bold << 5) | italic) or (1 << 6)
@@ -84,7 +90,7 @@ def parse_metadata(filename):
 
 
 def get_nametable(font_path):
-
+    """Infer the desired nametable from a font's filename"""
     filename = basename(font_path[:-4])
     family_name = fontdata.get_familyname(TTFont(font_path))
     font_style = filename.split('-')[-1]
